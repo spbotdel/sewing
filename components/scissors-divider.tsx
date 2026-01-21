@@ -27,6 +27,7 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 const SCISSORS_PROGRESS_BOOST = 1.45;
 const SCISSORS_PROGRESS_OFFSET = 0.03;
+const SCISSORS_START_DELAY = 0.12;
 const CUT_LINE_Y_LEFT = 38;
 const CUT_LINE_Y_RIGHT = 62;
 const CUT_PIVOT_Y = 50;
@@ -101,7 +102,11 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
 
   const reverse = scrollDirection === "up";
 
-  const cutProgress = scissorsProgress;
+  const cutProgress = clamp(
+    (scissorsProgress - SCISSORS_START_DELAY) / (1 - SCISSORS_START_DELAY),
+    0,
+    1
+  );
   const cutX = cutProgress * 100;
   const splitProgress = clamp(
     (cutProgress - SPLIT_START) / (1 - SPLIT_START),
