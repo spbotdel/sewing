@@ -31,6 +31,7 @@ const CUT_LINE_Y_LEFT = 38;
 const CUT_LINE_Y_RIGHT = 62;
 const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 2;
+const SEAM_THICKNESS = 1.4;
 const SPLIT_START = 0.12;
 const SPLIT_ROTATE_MAX = 12;
 const SNIP_COUNT = 6;
@@ -114,6 +115,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
   const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
   const textureColor = hexToRgba(fromColors.fg, 0.18);
+  const seamColor = hexToRgba(fromColors.bg, 0.6);
+  const seamFade = hexToRgba(fromColors.bg, 0);
   const fabricTexture = `repeating-linear-gradient(
     0deg,
     transparent,
@@ -121,6 +124,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
+  const seamGradient = `linear-gradient(90deg, ${seamColor}, ${seamFade})`;
 
   // Scissors position based on progress
   const scissorsLeft = -5 + scissorsProgress * 110; // from -5% to 105%
@@ -171,6 +175,34 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             transform: `rotate(${splitRotate}deg)`,
             transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
             transition: "transform 0.2s ease-out",
+          }}
+        />
+
+        {/* Soft seam blend */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            background: seamGradient,
+            clipPath: `polygon(
+              0 ${CUT_LINE_Y_LEFT - SEAM_THICKNESS}%,
+              ${cutXOverlapMax}% ${CUT_PIVOT_Y - SEAM_THICKNESS}%,
+              ${cutXOverlapMax}% ${CUT_PIVOT_Y + SEAM_THICKNESS}%,
+              0 ${CUT_LINE_Y_LEFT + SEAM_THICKNESS}%
+            )`,
+            filter: "blur(0.4px)",
+          }}
+        />
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            background: seamGradient,
+            clipPath: `polygon(
+              0 ${CUT_LINE_Y_RIGHT - SEAM_THICKNESS}%,
+              ${cutXOverlapMax}% ${CUT_PIVOT_Y - SEAM_THICKNESS}%,
+              ${cutXOverlapMax}% ${CUT_PIVOT_Y + SEAM_THICKNESS}%,
+              0 ${CUT_LINE_Y_RIGHT + SEAM_THICKNESS}%
+            )`,
+            filter: "blur(0.4px)",
           }}
         />
 
