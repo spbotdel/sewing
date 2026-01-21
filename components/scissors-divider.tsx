@@ -27,9 +27,10 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 const SCISSORS_PROGRESS_BOOST = 1.45;
 const SCISSORS_PROGRESS_OFFSET = 0.03;
-const CUT_LINE_Y = 50;
+const CUT_LINE_Y_LEFT = 38;
+const CUT_LINE_Y_RIGHT = 62;
 const SPLIT_START = 0.12;
-const SPLIT_ROTATE_MAX = 12;
+const SPLIT_SHIFT_Y = 80;
 const SNIP_COUNT = 6;
 const BLADE_BASE_ANGLE = 4;
 const BLADE_SWING = 10;
@@ -100,12 +101,16 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
 
   const cutProgress = scissorsProgress;
   const cutX = cutProgress * 100;
+  const cutXRatio = cutX / 100;
+  const lineYAtCut =
+    CUT_LINE_Y_LEFT +
+    (CUT_LINE_Y_RIGHT - CUT_LINE_Y_LEFT) * cutXRatio;
   const splitProgress = clamp(
     (cutProgress - SPLIT_START) / (1 - SPLIT_START),
     0,
     1
   );
-  const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
+  const splitShiftY = splitProgress * SPLIT_SHIFT_Y;
   const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
   const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
   const textureColor = hexToRgba(fromColors.fg, 0.18);
@@ -126,7 +131,10 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       className="relative h-[250px] md:h-[350px] -my-[125px] md:-my-[175px] pointer-events-none z-20"
       aria-hidden="true"
     >
-      <div className="absolute inset-0" style={{ backgroundColor: toColors.bg }}>
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{ backgroundColor: toColors.bg }}
+      >
         {/* Uncut fabric on the right */}
         <div
           className="absolute inset-0"
@@ -145,9 +153,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_LINE_Y}%, 0 ${CUT_LINE_Y}%)`,
-            transform: `rotate(${-splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
+            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${lineYAtCut}%, 0 ${CUT_LINE_Y_LEFT}%)`,
+            transform: `translateY(${-splitShiftY}px)`,
+            transformOrigin: `${cutX}% ${lineYAtCut}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
@@ -159,9 +167,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 ${CUT_LINE_Y}%, ${cutX}% ${CUT_LINE_Y}%, ${cutX}% 100%, 0 100%)`,
-            transform: `rotate(${splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
+            clipPath: `polygon(0 ${CUT_LINE_Y_LEFT}%, ${cutX}% ${lineYAtCut}%, ${cutX}% 100%, 0 100%)`,
+            transform: `translateY(${splitShiftY}px)`,
+            transformOrigin: `${cutX}% ${lineYAtCut}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
