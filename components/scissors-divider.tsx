@@ -28,13 +28,13 @@ const hexToRgba = (hex: string, alpha: number) => {
 const SCISSORS_PROGRESS_BOOST = 1.45;
 const SCISSORS_PROGRESS_OFFSET = 0.03;
 const SCISSORS_START_DELAY = 0.38;
-const SCISSORS_PIVOT_PERCENT = 25;
-const CUT_LINE_Y_LEFT = 20;
-const CUT_LINE_Y_RIGHT = 80;
+const SCISSORS_PIVOT_PERCENT = 40;
+const CUT_LINE_Y_LEFT = 10;
+const CUT_LINE_Y_RIGHT = 90;
 const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 2;
 const SPLIT_START = 0.12;
-const SPLIT_SHIFT_Y = 90;
+const SPLIT_ROTATE_MAX = 8;
 const SNIP_COUNT = 6;
 const BLADE_BASE_ANGLE = 4;
 const BLADE_SWING = 10;
@@ -114,9 +114,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     0,
     1
   );
-  const splitShiftY = splitProgress * SPLIT_SHIFT_Y;
+  const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
-  const cutXOverlapMax = clamp(cutX + CUT_OVERLAP, 0, 100);
   const snip = (Math.sin(cutProgress * Math.PI * SNIP_COUNT) + 1) / 2;
   const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
   const textureColor = hexToRgba(fromColors.fg, 0.18);
@@ -159,8 +158,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 0, ${cutXOverlapMax}% 0, ${cutXOverlapMax}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`,
-            transform: `translateY(${-splitShiftY}px)`,
+            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`,
+            transform: `rotate(${-splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
@@ -172,8 +172,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutXOverlapMax}% ${CUT_PIVOT_Y}%, ${cutXOverlapMax}% 100%, 0 100%)`,
-            transform: `translateY(${splitShiftY}px)`,
+            clipPath: `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`,
+            transform: `rotate(${splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
