@@ -28,8 +28,9 @@ const hexToRgba = (hex: string, alpha: number) => {
 const SCISSORS_PROGRESS_BOOST = 1.45;
 const SCISSORS_PROGRESS_OFFSET = 0.03;
 const SCISSORS_START_DELAY = 0.38;
-const CUT_LINE_Y_LEFT = 38;
-const CUT_LINE_Y_RIGHT = 62;
+const SCISSORS_PIVOT_PERCENT = 40;
+const CUT_LINE_Y_LEFT = 30;
+const CUT_LINE_Y_RIGHT = 70;
 const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 2;
 const SPLIT_START = 0.12;
@@ -116,7 +117,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const splitShiftY = splitProgress * SPLIT_SHIFT_Y;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
   const cutXOverlapMax = clamp(cutX + CUT_OVERLAP, 0, 100);
-  const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
+  const snip = (Math.sin(cutProgress * Math.PI * SNIP_COUNT) + 1) / 2;
   const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
   const textureColor = hexToRgba(fromColors.fg, 0.18);
   const fabricTexture = `repeating-linear-gradient(
@@ -128,7 +129,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   )`;
 
   // Scissors position based on progress
-  const scissorsLeft = -5 + scissorsProgress * 110; // from -5% to 105%
+  const scissorsLeft = cutX;
 
   return (
     <div
@@ -182,7 +183,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           className="absolute top-1/2 z-20"
           style={{
             left: `${scissorsLeft}%`,
-            transform: `translate(-50%, -50%) rotate(${reverse ? 180 : 0}deg)`,
+            transform: `translate(-${SCISSORS_PIVOT_PERCENT}%, -50%) rotate(${reverse ? 180 : 0}deg)`,
           }}
         >
           <svg
