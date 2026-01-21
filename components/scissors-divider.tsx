@@ -25,15 +25,14 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const SCISSORS_PROGRESS_BOOST = 1.2;
-const SCISSORS_PROGRESS_OFFSET = -0.02;
-const CUT_LINE_Y_LEFT = 36;
-const CUT_LINE_Y_RIGHT = 64;
+const SCISSORS_PROGRESS_BOOST = 1.45;
+const SCISSORS_PROGRESS_OFFSET = 0.03;
+const CUT_LINE_Y = 50;
 const SPLIT_START = 0.12;
-const SPLIT_SHIFT_Y = 100;
-const SNIP_COUNT = 9;
-const BLADE_BASE_ANGLE = 2;
-const BLADE_SWING = 18;
+const SPLIT_ROTATE_MAX = 12;
+const SNIP_COUNT = 6;
+const BLADE_BASE_ANGLE = 4;
+const BLADE_SWING = 10;
 
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
@@ -52,7 +51,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       const total = viewportHeight + rect.height;
       const rawProgress = (viewportHeight - rect.top) / total;
       const clampedProgress = clamp(rawProgress, 0, 1);
-      const easedProgress = clampedProgress;
+      const easedProgress = 1 - Math.pow(1 - clampedProgress, 2);
       const boostedProgress = clamp(
         easedProgress * SCISSORS_PROGRESS_BOOST + SCISSORS_PROGRESS_OFFSET,
         0,
@@ -100,17 +99,13 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const reverse = scrollDirection === "up";
 
   const cutProgress = scissorsProgress;
-  const cutX = clamp(cutProgress * 110 - 10, 0, 100);
-  const cutXRatio = cutX / 100;
-  const lineYAtCut =
-    CUT_LINE_Y_LEFT +
-    (CUT_LINE_Y_RIGHT - CUT_LINE_Y_LEFT) * cutXRatio;
+  const cutX = cutProgress * 100;
   const splitProgress = clamp(
     (cutProgress - SPLIT_START) / (1 - SPLIT_START),
     0,
     1
   );
-  const splitShiftY = splitProgress * SPLIT_SHIFT_Y;
+  const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
   const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
   const textureColor = hexToRgba(fromColors.fg, 0.18);
@@ -123,7 +118,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   )`;
 
   // Scissors position based on progress
-  const scissorsLeft = cutX;
+  const scissorsLeft = -5 + scissorsProgress * 110; // from -5% to 105%
 
   return (
     <div
@@ -150,9 +145,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${lineYAtCut}%, 0 ${CUT_LINE_Y_LEFT}%)`,
-            transform: `translateY(${-splitShiftY}px)`,
-            transformOrigin: `${cutX}% ${lineYAtCut}%`,
+            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_LINE_Y}%, 0 ${CUT_LINE_Y}%)`,
+            transform: `rotate(${-splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
@@ -164,9 +159,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(0 ${CUT_LINE_Y_LEFT}%, ${cutX}% ${lineYAtCut}%, ${cutX}% 100%, 0 100%)`,
-            transform: `translateY(${splitShiftY}px)`,
-            transformOrigin: `${cutX}% ${lineYAtCut}%`,
+            clipPath: `polygon(0 ${CUT_LINE_Y}%, ${cutX}% ${CUT_LINE_Y}%, ${cutX}% 100%, 0 100%)`,
+            transform: `rotate(${splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         />
