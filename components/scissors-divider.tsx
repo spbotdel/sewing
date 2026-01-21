@@ -13,55 +13,62 @@ const themeColors = {
   red: { bg: "#CC0000", fg: "#F5F0E6" },
 };
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
   const ref = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) {
-          setHasStarted(true);
-        }
-      },
-      { threshold: 0.5 }
-    );
+    lastScrollY.current = window.scrollY;
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    const update = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 1;
+      const total = viewportHeight + rect.height;
+      const rawProgress = (viewportHeight - rect.top) / total;
+      setScissorsProgress(clamp(rawProgress, 0, 1));
 
-    return () => observer.disconnect();
-  }, [hasStarted]);
-
-  // Animate scissors slowly across the screen
-  useEffect(() => {
-    if (!hasStarted) return;
-    
-    let animationFrame: number;
-    const duration = 3000; // 3 seconds for full animation
-    const startTime = Date.now();
-    
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Easing function for smooth movement
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setScissorsProgress(eased);
-      
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
+      const currentY = window.scrollY;
+      const delta = currentY - lastScrollY.current;
+      if (Math.abs(delta) > 2) {
+        setScrollDirection(delta > 0 ? "down" : "up");
       }
+      lastScrollY.current = currentY;
     };
-    
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [hasStarted]);
+
+    const onScroll = () => {
+      if (rafId.current !== null) return;
+      rafId.current = requestAnimationFrame(() => {
+        rafId.current = null;
+        update();
+      });
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   const fromColors = themeColors[fromTheme];
   const toColors = themeColors[toTheme];
   
+  const bladesOpen = scissorsProgress > 0.02;
+  const reverse = scrollDirection === "up";
+
   // Scissors position based on progress
   const scissorsLeft = -10 + scissorsProgress * 120; // from -10% to 110%
   const cutProgress = scissorsProgress;
@@ -69,144 +76,149 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   return (
     <div
       ref={ref}
-      className="relative h-[250px] md:h-[350px] overflow-hidden"
-      style={{ backgroundColor: toColors.bg }}
+      className="relative h-[250px] md:h-[350px] -my-[125px] md:-my-[175px] pointer-events-none z-20"
+      aria-hidden="true"
     >
-      {/* Top fabric being cut - reveals from left as scissors move */}
       <div
-        className="absolute inset-0"
-        style={{
-          backgroundColor: fromColors.bg,
-          clipPath: `polygon(${cutProgress * 100}% 0, 100% 0, 100% 45%, ${cutProgress * 100}% 55%)`,
-        }}
-      />
-
-      {/* Bottom fabric being cut */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundColor: fromColors.bg,
-          clipPath: `polygon(${cutProgress * 100}% 55%, 100% 45%, 100% 100%, ${cutProgress * 100}% 100%)`,
-        }}
-      />
-      
-      {/* Cut fabric pieces falling away */}
-      <div
-        className="absolute inset-0 transition-transform"
-        style={{
-          backgroundColor: fromColors.bg,
-          clipPath: `polygon(0 0, ${cutProgress * 100}% 0, ${cutProgress * 100}% 55%, 0 45%)`,
-          transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * -150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * -5 : 0}deg)`,
-          transformOrigin: 'right center',
-          transition: 'transform 0.3s ease-out',
-        }}
-      />
-      
-      <div
-        className="absolute inset-0 transition-transform"
-        style={{
-          backgroundColor: fromColors.bg,
-          clipPath: `polygon(0 55%, ${cutProgress * 100}% 45%, ${cutProgress * 100}% 100%, 0 100%)`,
-          transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * 150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * 5 : 0}deg)`,
-          transformOrigin: 'right center',
-          transition: 'transform 0.3s ease-out',
-        }}
-      />
-
-      {/* Red cut line trail */}
-      <div
-        className="absolute h-2 z-10"
-        style={{
-          left: 0,
-          right: `${100 - cutProgress * 100}%`,
-          top: '50%',
-          transform: 'translateY(-50%) rotate(5deg)',
-          background: '#CC0000',
-          boxShadow: '0 0 20px #CC0000',
-        }}
-      />
-
-      {/* Large Scissors SVG */}
-      <div
-        className="absolute top-1/2 z-20"
-        style={{
-          left: `${scissorsLeft}%`,
-          transform: 'translateY(-50%) translateX(-50%)',
-        }}
+        className="absolute inset-0 overflow-hidden"
+        style={{ backgroundColor: toColors.bg }}
       >
-        <svg
-          width="180"
-          height="180"
-          viewBox="0 0 100 100"
-          fill="none"
-          className="drop-shadow-2xl"
+        {/* Top fabric being cut - reveals from left as scissors move */}
+        <div
+          className="absolute inset-0"
           style={{
-            filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))',
+            backgroundColor: fromColors.bg,
+            clipPath: `polygon(${cutProgress * 100}% 0, 100% 0, 100% 45%, ${cutProgress * 100}% 55%)`,
+          }}
+        />
+
+        {/* Bottom fabric being cut */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundColor: fromColors.bg,
+            clipPath: `polygon(${cutProgress * 100}% 55%, 100% 45%, 100% 100%, ${cutProgress * 100}% 100%)`,
+          }}
+        />
+        
+        {/* Cut fabric pieces falling away */}
+        <div
+          className="absolute inset-0 transition-transform"
+          style={{
+            backgroundColor: fromColors.bg,
+            clipPath: `polygon(0 0, ${cutProgress * 100}% 0, ${cutProgress * 100}% 55%, 0 45%)`,
+            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * -150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * -5 : 0}deg)`,
+            transformOrigin: "right center",
+            transition: "transform 0.3s ease-out",
+          }}
+        />
+        
+        <div
+          className="absolute inset-0 transition-transform"
+          style={{
+            backgroundColor: fromColors.bg,
+            clipPath: `polygon(0 55%, ${cutProgress * 100}% 45%, ${cutProgress * 100}% 100%, 0 100%)`,
+            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * 150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * 5 : 0}deg)`,
+            transformOrigin: "right center",
+            transition: "transform 0.3s ease-out",
+          }}
+        />
+
+        {/* Red cut line trail */}
+        <div
+          className="absolute h-2 z-10"
+          style={{
+            left: 0,
+            right: `${100 - cutProgress * 100}%`,
+            top: "50%",
+            transform: "translateY(-50%) rotate(5deg)",
+            background: "#CC0000",
+            boxShadow: "0 0 20px #CC0000",
+          }}
+        />
+
+        {/* Large Scissors SVG */}
+        <div
+          className="absolute top-1/2 z-20"
+          style={{
+            left: `${scissorsLeft}%`,
+            transform: `translate(-50%, -50%) rotate(${reverse ? 180 : 0}deg)`,
           }}
         >
-          {/* Top blade */}
-          <path
-            d="M85 45 L40 50 L15 35 L20 30 L45 42 L85 38 Z"
-            fill={toColors.fg}
-            stroke={toColors.fg}
-            strokeWidth="1"
-            style={{
-              transform: hasStarted ? 'rotate(-5deg)' : 'rotate(-15deg)',
-              transformOrigin: '40px 50px',
-              transition: 'transform 0.3s ease-in-out',
-            }}
-          />
-          {/* Bottom blade */}
-          <path
-            d="M85 55 L40 50 L15 65 L20 70 L45 58 L85 62 Z"
-            fill={toColors.fg}
-            stroke={toColors.fg}
-            strokeWidth="1"
-            style={{
-              transform: hasStarted ? 'rotate(5deg)' : 'rotate(15deg)',
-              transformOrigin: '40px 50px',
-              transition: 'transform 0.3s ease-in-out',
-            }}
-          />
-          {/* Top handle ring */}
-          <ellipse
-            cx="12"
-            cy="28"
-            rx="10"
-            ry="12"
+          <svg
+            width="180"
+            height="180"
+            viewBox="0 0 100 100"
             fill="none"
-            stroke={toColors.fg}
-            strokeWidth="4"
-          />
-          {/* Bottom handle ring */}
-          <ellipse
-            cx="12"
-            cy="72"
-            rx="10"
-            ry="12"
-            fill="none"
-            stroke={toColors.fg}
-            strokeWidth="4"
-          />
-          {/* Pivot screw */}
-          <circle cx="40" cy="50" r="6" fill="#CC0000" />
-          <circle cx="40" cy="50" r="3" fill={toColors.fg} />
-        </svg>
-      </div>
+            className="drop-shadow-2xl"
+            style={{
+              filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5))",
+            }}
+          >
+            {/* Top blade */}
+            <path
+              d="M85 45 L40 50 L15 35 L20 30 L45 42 L85 38 Z"
+              fill={toColors.fg}
+              stroke={toColors.fg}
+              strokeWidth="1"
+              style={{
+                transform: bladesOpen ? "rotate(-5deg)" : "rotate(-15deg)",
+                transformOrigin: "40px 50px",
+                transition: "transform 0.3s ease-in-out",
+              }}
+            />
+            {/* Bottom blade */}
+            <path
+              d="M85 55 L40 50 L15 65 L20 70 L45 58 L85 62 Z"
+              fill={toColors.fg}
+              stroke={toColors.fg}
+              strokeWidth="1"
+              style={{
+                transform: bladesOpen ? "rotate(5deg)" : "rotate(15deg)",
+                transformOrigin: "40px 50px",
+                transition: "transform 0.3s ease-in-out",
+              }}
+            />
+            {/* Top handle ring */}
+            <ellipse
+              cx="12"
+              cy="28"
+              rx="10"
+              ry="12"
+              fill="none"
+              stroke={toColors.fg}
+              strokeWidth="4"
+            />
+            {/* Bottom handle ring */}
+            <ellipse
+              cx="12"
+              cy="72"
+              rx="10"
+              ry="12"
+              fill="none"
+              stroke={toColors.fg}
+              strokeWidth="4"
+            />
+            {/* Pivot screw */}
+            <circle cx="40" cy="50" r="6" fill="#CC0000" />
+            <circle cx="40" cy="50" r="3" fill={toColors.fg} />
+          </svg>
+        </div>
 
-      {/* Fabric texture overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-10"
-        style={{
-          backgroundImage: `repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            ${fromColors.fg} 2px,
-            ${fromColors.fg} 4px
-          )`,
-        }}
-      />
+        {/* Fabric texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-10"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              ${fromColors.fg} 2px,
+              ${fromColors.fg} 4px
+            )`,
+          }}
+        />
+      </div>
     </div>
   );
 }

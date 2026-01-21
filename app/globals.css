@@ -272,3 +272,8 @@
   --section-fg: #F5F0E6;
   --section-accent: #1A1A1A;
 }
+
+main .container {
+  position: relative;
+  z-index: 30;
+}
