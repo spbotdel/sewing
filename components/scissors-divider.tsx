@@ -16,18 +16,6 @@ const themeColors = {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-const hexToRgba = (hex: string, alpha: number) => {
-  const normalized = hex.replace("#", "");
-  const parsed = parseInt(normalized, 16);
-  const r = (parsed >> 16) & 255;
-  const g = (parsed >> 8) & 255;
-  const b = parsed & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
-const SCISSORS_PROGRESS_BOOST = 1.3;
-const SCISSORS_PROGRESS_OFFSET = 0.02;
-
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
@@ -44,19 +32,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       const viewportHeight = window.innerHeight || 1;
       const total = viewportHeight + rect.height;
       const rawProgress = (viewportHeight - rect.top) / total;
-      const clampedProgress = clamp(rawProgress, 0, 1);
-      const easedProgress = 1 - Math.pow(1 - clampedProgress, 2);
-      const boostedProgress = clamp(
-        easedProgress * SCISSORS_PROGRESS_BOOST + SCISSORS_PROGRESS_OFFSET,
-        0,
-        1
-      );
-      const maxScroll = Math.max(
-        0,
-        document.documentElement.scrollHeight - viewportHeight
-      );
-      const atBottom = window.scrollY >= maxScroll - 2;
-      setScissorsProgress(atBottom ? 1 : boostedProgress);
+      setScissorsProgress(clamp(rawProgress, 0, 1));
 
       const currentY = window.scrollY;
       const delta = currentY - lastScrollY.current;
@@ -93,33 +69,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const bladesOpen = scissorsProgress > 0.02;
   const reverse = scrollDirection === "up";
 
-  const cutProgress = scissorsProgress;
-  const cutX = cutProgress * 100;
-  const lineYLeft = 44;
-  const lineYRight = 56;
-  const lineYAtCut =
-    lineYLeft + (lineYRight - lineYLeft) * cutProgress;
-  const splitProgress = Math.max(0, cutProgress - 0.08);
-  const splitDistance = splitProgress * 150;
-  const splitRotate = splitProgress * 6;
-  const textureColor = hexToRgba(fromColors.fg, 0.18);
-  const fabricTexture = `repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    ${textureColor} 2px,
-    ${textureColor} 4px
-  )`;
-  const lineThickness = 0.8;
-  const lineClip = `polygon(
-    0 ${lineYLeft - lineThickness}%,
-    ${cutX}% ${lineYAtCut - lineThickness}%,
-    ${cutX}% ${lineYAtCut + lineThickness}%,
-    0 ${lineYLeft + lineThickness}%
-  )`;
-
   // Scissors position based on progress
-  const scissorsLeft = -5 + scissorsProgress * 110; // from -5% to 105%
+  const scissorsLeft = -10 + scissorsProgress * 120; // from -10% to 110%
+  const cutProgress = scissorsProgress;
 
   return (
     <div
@@ -131,53 +83,57 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
         className="absolute inset-0 overflow-hidden"
         style={{ backgroundColor: toColors.bg }}
       >
-        {/* Uncut fabric on the right */}
+        {/* Top fabric being cut - reveals from left as scissors move */}
         <div
           className="absolute inset-0"
           style={{
             backgroundColor: fromColors.bg,
-            backgroundImage: fabricTexture,
-            backgroundPosition: "0 0",
-            clipPath: `polygon(${cutX}% 0, 100% 0, 100% 100%, ${cutX}% 100%)`,
+            clipPath: `polygon(${cutProgress * 100}% 0, 100% 0, 100% 45%, ${cutProgress * 100}% 55%)`,
           }}
         />
 
-        {/* Top fabric piece moving away */}
+        {/* Bottom fabric being cut */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundColor: fromColors.bg,
+            clipPath: `polygon(${cutProgress * 100}% 55%, 100% 45%, 100% 100%, ${cutProgress * 100}% 100%)`,
+          }}
+        />
+        
+        {/* Cut fabric pieces falling away */}
         <div
           className="absolute inset-0 transition-transform"
           style={{
             backgroundColor: fromColors.bg,
-            backgroundImage: fabricTexture,
-            backgroundPosition: "0 0",
-            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${lineYAtCut}%, 0 ${lineYLeft}%)`,
-            transform: `translateY(${-splitDistance}px) rotate(${-splitRotate}deg)`,
+            clipPath: `polygon(0 0, ${cutProgress * 100}% 0, ${cutProgress * 100}% 55%, 0 45%)`,
+            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * -150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * -5 : 0}deg)`,
             transformOrigin: "right center",
-            transition: "transform 0.25s ease-out",
+            transition: "transform 0.3s ease-out",
           }}
         />
-
-        {/* Bottom fabric piece moving away */}
+        
         <div
           className="absolute inset-0 transition-transform"
           style={{
             backgroundColor: fromColors.bg,
-            backgroundImage: fabricTexture,
-            backgroundPosition: "0 0",
-            clipPath: `polygon(0 ${lineYLeft}%, ${cutX}% ${lineYAtCut}%, ${cutX}% 100%, 0 100%)`,
-            transform: `translateY(${splitDistance}px) rotate(${splitRotate}deg)`,
+            clipPath: `polygon(0 55%, ${cutProgress * 100}% 45%, ${cutProgress * 100}% 100%, 0 100%)`,
+            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * 150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * 5 : 0}deg)`,
             transformOrigin: "right center",
-            transition: "transform 0.25s ease-out",
+            transition: "transform 0.3s ease-out",
           }}
         />
 
-        {/* Cut glow */}
+        {/* Red cut line trail */}
         <div
-          className="absolute inset-0 z-10"
+          className="absolute h-2 z-10"
           style={{
-            background:
-              "linear-gradient(90deg, rgba(204,0,0,0.9), rgba(204,0,0,0.05))",
-            clipPath: lineClip,
-            filter: "drop-shadow(0 0 14px rgba(204,0,0,0.4))",
+            left: 0,
+            right: `${100 - cutProgress * 100}%`,
+            top: "50%",
+            transform: "translateY(-50%) rotate(5deg)",
+            background: "#CC0000",
+            boxShadow: "0 0 20px #CC0000",
           }}
         />
 
@@ -201,11 +157,10 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           >
             {/* Top blade */}
             <path
-              d="M90 43 L58 48 L40 46 L22 32 L28 28 L46 38 L60 41 L90 39 Z"
+              d="M85 45 L40 50 L15 35 L20 30 L45 42 L85 38 Z"
               fill={toColors.fg}
               stroke={toColors.fg}
               strokeWidth="1"
-              strokeLinejoin="round"
               style={{
                 transform: bladesOpen ? "rotate(-5deg)" : "rotate(-15deg)",
                 transformOrigin: "40px 50px",
@@ -214,11 +169,10 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             />
             {/* Bottom blade */}
             <path
-              d="M90 57 L60 52 L46 54 L22 68 L28 72 L40 62 L58 59 L90 61 Z"
+              d="M85 55 L40 50 L15 65 L20 70 L45 58 L85 62 Z"
               fill={toColors.fg}
               stroke={toColors.fg}
               strokeWidth="1"
-              strokeLinejoin="round"
               style={{
                 transform: bladesOpen ? "rotate(5deg)" : "rotate(15deg)",
                 transformOrigin: "40px 50px",
@@ -251,6 +205,19 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           </svg>
         </div>
 
+        {/* Fabric texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-10"
+          style={{
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              ${fromColors.fg} 2px,
+              ${fromColors.fg} 4px
+            )`,
+          }}
+        />
       </div>
     </div>
   );
