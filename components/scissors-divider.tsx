@@ -16,6 +16,24 @@ const themeColors = {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+const hexToRgba = (hex: string, alpha: number) => {
+  const normalized = hex.replace("#", "");
+  const parsed = parseInt(normalized, 16);
+  const r = (parsed >> 16) & 255;
+  const g = (parsed >> 8) & 255;
+  const b = parsed & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const SCISSORS_PROGRESS_BOOST = 1.45;
+const SCISSORS_PROGRESS_OFFSET = 0.03;
+const CUT_LINE_Y = 50;
+const SPLIT_START = 0.12;
+const SPLIT_ROTATE_MAX = 12;
+const SNIP_COUNT = 6;
+const BLADE_BASE_ANGLE = 4;
+const BLADE_SWING = 10;
+
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
@@ -32,7 +50,19 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       const viewportHeight = window.innerHeight || 1;
       const total = viewportHeight + rect.height;
       const rawProgress = (viewportHeight - rect.top) / total;
-      setScissorsProgress(clamp(rawProgress, 0, 1));
+      const clampedProgress = clamp(rawProgress, 0, 1);
+      const easedProgress = 1 - Math.pow(1 - clampedProgress, 2);
+      const boostedProgress = clamp(
+        easedProgress * SCISSORS_PROGRESS_BOOST + SCISSORS_PROGRESS_OFFSET,
+        0,
+        1
+      );
+      const maxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - viewportHeight
+      );
+      const atBottom = window.scrollY >= maxScroll - 2;
+      setScissorsProgress(atBottom ? 1 : boostedProgress);
 
       const currentY = window.scrollY;
       const delta = currentY - lastScrollY.current;
@@ -65,13 +95,30 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
 
   const fromColors = themeColors[fromTheme];
   const toColors = themeColors[toTheme];
-  
-  const bladesOpen = scissorsProgress > 0.02;
+
   const reverse = scrollDirection === "up";
 
-  // Scissors position based on progress
-  const scissorsLeft = -10 + scissorsProgress * 120; // from -10% to 110%
   const cutProgress = scissorsProgress;
+  const cutX = cutProgress * 100;
+  const splitProgress = clamp(
+    (cutProgress - SPLIT_START) / (1 - SPLIT_START),
+    0,
+    1
+  );
+  const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
+  const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
+  const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
+  const textureColor = hexToRgba(fromColors.fg, 0.18);
+  const fabricTexture = `repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    ${textureColor} 2px,
+    ${textureColor} 4px
+  )`;
+
+  // Scissors position based on progress
+  const scissorsLeft = -5 + scissorsProgress * 110; // from -5% to 105%
 
   return (
     <div
@@ -79,61 +126,43 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       className="relative h-[250px] md:h-[350px] -my-[125px] md:-my-[175px] pointer-events-none z-20"
       aria-hidden="true"
     >
-      <div
-        className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: toColors.bg }}
-      >
-        {/* Top fabric being cut - reveals from left as scissors move */}
+      <div className="absolute inset-0" style={{ backgroundColor: toColors.bg }}>
+        {/* Uncut fabric on the right */}
         <div
           className="absolute inset-0"
           style={{
             backgroundColor: fromColors.bg,
-            clipPath: `polygon(${cutProgress * 100}% 0, 100% 0, 100% 45%, ${cutProgress * 100}% 55%)`,
+            backgroundImage: fabricTexture,
+            backgroundPosition: "0 0",
+            clipPath: `polygon(${cutX}% 0, 100% 0, 100% 100%, ${cutX}% 100%)`,
           }}
         />
 
-        {/* Bottom fabric being cut */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundColor: fromColors.bg,
-            clipPath: `polygon(${cutProgress * 100}% 55%, 100% 45%, 100% 100%, ${cutProgress * 100}% 100%)`,
-          }}
-        />
-        
-        {/* Cut fabric pieces falling away */}
+        {/* Top fabric piece */}
         <div
           className="absolute inset-0 transition-transform"
           style={{
             backgroundColor: fromColors.bg,
-            clipPath: `polygon(0 0, ${cutProgress * 100}% 0, ${cutProgress * 100}% 55%, 0 45%)`,
-            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * -150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * -5 : 0}deg)`,
-            transformOrigin: "right center",
-            transition: "transform 0.3s ease-out",
+            backgroundImage: fabricTexture,
+            backgroundPosition: "0 0",
+            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_LINE_Y}%, 0 ${CUT_LINE_Y}%)`,
+            transform: `rotate(${-splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
+            transition: "transform 0.2s ease-out",
           }}
         />
-        
+
+        {/* Bottom fabric piece */}
         <div
           className="absolute inset-0 transition-transform"
           style={{
             backgroundColor: fromColors.bg,
-            clipPath: `polygon(0 55%, ${cutProgress * 100}% 45%, ${cutProgress * 100}% 100%, 0 100%)`,
-            transform: `translateY(${cutProgress > 0.3 ? (cutProgress - 0.3) * 150 : 0}px) rotate(${cutProgress > 0.3 ? (cutProgress - 0.3) * 5 : 0}deg)`,
-            transformOrigin: "right center",
-            transition: "transform 0.3s ease-out",
-          }}
-        />
-
-        {/* Red cut line trail */}
-        <div
-          className="absolute h-2 z-10"
-          style={{
-            left: 0,
-            right: `${100 - cutProgress * 100}%`,
-            top: "50%",
-            transform: "translateY(-50%) rotate(5deg)",
-            background: "#CC0000",
-            boxShadow: "0 0 20px #CC0000",
+            backgroundImage: fabricTexture,
+            backgroundPosition: "0 0",
+            clipPath: `polygon(0 ${CUT_LINE_Y}%, ${cutX}% ${CUT_LINE_Y}%, ${cutX}% 100%, 0 100%)`,
+            transform: `rotate(${splitRotate}deg)`,
+            transformOrigin: `${cutX}% ${CUT_LINE_Y}%`,
+            transition: "transform 0.2s ease-out",
           }}
         />
 
@@ -157,26 +186,28 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           >
             {/* Top blade */}
             <path
-              d="M85 45 L40 50 L15 35 L20 30 L45 42 L85 38 Z"
+              d="M94 44 L60 48 L44 46 L26 34 L30 30 L46 37 L62 40 L94 39 Z"
               fill={toColors.fg}
               stroke={toColors.fg}
-              strokeWidth="1"
+              strokeWidth="0.8"
+              strokeLinejoin="round"
               style={{
-                transform: bladesOpen ? "rotate(-5deg)" : "rotate(-15deg)",
+                transform: `rotate(${-bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.3s ease-in-out",
+                transition: "transform 0.2s ease-out",
               }}
             />
             {/* Bottom blade */}
             <path
-              d="M85 55 L40 50 L15 65 L20 70 L45 58 L85 62 Z"
+              d="M94 56 L62 52 L46 54 L26 66 L30 70 L44 63 L60 60 L94 61 Z"
               fill={toColors.fg}
               stroke={toColors.fg}
-              strokeWidth="1"
+              strokeWidth="0.8"
+              strokeLinejoin="round"
               style={{
-                transform: bladesOpen ? "rotate(5deg)" : "rotate(15deg)",
+                transform: `rotate(${bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.3s ease-in-out",
+                transition: "transform 0.2s ease-out",
               }}
             />
             {/* Top handle ring */}
@@ -205,19 +236,6 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           </svg>
         </div>
 
-        {/* Fabric texture overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-10"
-          style={{
-            backgroundImage: `repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 2px,
-              ${fromColors.fg} 2px,
-              ${fromColors.fg} 4px
-            )`,
-          }}
-        />
       </div>
     </div>
   );
