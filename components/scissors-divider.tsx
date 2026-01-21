@@ -33,7 +33,7 @@ const CUT_LINE_Y_RIGHT = 62;
 const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 2;
 const SPLIT_START = 0.12;
-const SPLIT_ROTATE_MAX = 12;
+const SPLIT_SHIFT_Y = 90;
 const SNIP_COUNT = 6;
 const BLADE_BASE_ANGLE = 4;
 const BLADE_SWING = 10;
@@ -113,7 +113,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     0,
     1
   );
-  const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
+  const splitShiftY = splitProgress * SPLIT_SHIFT_Y;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
   const cutXOverlapMax = clamp(cutX + CUT_OVERLAP, 0, 100);
   const snip = (Math.sin(scissorsProgress * Math.PI * SNIP_COUNT) + 1) / 2;
@@ -155,45 +155,27 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
         <div
           className="absolute inset-0 transition-transform"
           style={{
+            backgroundColor: fromColors.bg,
+            backgroundImage: fabricTexture,
+            backgroundPosition: "0 0",
             clipPath: `polygon(0 0, ${cutXOverlapMax}% 0, ${cutXOverlapMax}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`,
-            transform: `rotate(${-splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+            transform: `translateY(${-splitShiftY}px)`,
             transition: "transform 0.2s ease-out",
           }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundColor: fromColors.bg,
-              backgroundImage: fabricTexture,
-              backgroundPosition: "0 0",
-              transform: `rotate(${splitRotate}deg)`,
-              transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
-            }}
-          />
-        </div>
+        />
 
         {/* Bottom fabric piece */}
         <div
           className="absolute inset-0 transition-transform"
           style={{
+            backgroundColor: fromColors.bg,
+            backgroundImage: fabricTexture,
+            backgroundPosition: "0 0",
             clipPath: `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutXOverlapMax}% ${CUT_PIVOT_Y}%, ${cutXOverlapMax}% 100%, 0 100%)`,
-            transform: `rotate(${splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+            transform: `translateY(${splitShiftY}px)`,
             transition: "transform 0.2s ease-out",
           }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundColor: fromColors.bg,
-              backgroundImage: fabricTexture,
-              backgroundPosition: "0 0",
-              transform: `rotate(${-splitRotate}deg)`,
-              transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
-            }}
-          />
-        </div>
+        />
 
         {/* Large Scissors SVG */}
         <div
