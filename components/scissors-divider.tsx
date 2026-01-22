@@ -256,20 +256,18 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 strokeLinecap="round"
               />
               {/* Top handle ring */}
-              <ellipse
-                cx="12"
-                cy="18"
-                rx="10"
-                ry="12"
+              <circle
+                cx="20"
+                cy="22"
+                r="10"
                 fill="none"
                 stroke={HANDLE_COLOR}
                 strokeWidth="4"
               />
-              <ellipse
-                cx="12"
-                cy="18"
-                rx="6.5"
-                ry="8"
+              <circle
+                cx="20"
+                cy="22"
+                r="6.5"
                 fill="none"
                 stroke={HANDLE_HIGHLIGHT}
                 strokeWidth="1.2"
@@ -294,20 +292,18 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 strokeLinecap="round"
               />
               {/* Bottom handle ring */}
-              <ellipse
-                cx="12"
-                cy="82"
-                rx="10"
-                ry="12"
+              <circle
+                cx="20"
+                cy="78"
+                r="10"
                 fill="none"
                 stroke={HANDLE_COLOR}
                 strokeWidth="4"
               />
-              <ellipse
-                cx="12"
-                cy="82"
-                rx="6.5"
-                ry="8"
+              <circle
+                cx="20"
+                cy="78"
+                r="6.5"
                 fill="none"
                 stroke={HANDLE_HIGHLIGHT}
                 strokeWidth="1.2"
