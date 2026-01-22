@@ -25,25 +25,8 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const mixHex = (hex: string, mix: string, amount: number) => {
-  const normalized = hex.replace("#", "");
-  const mixNormalized = mix.replace("#", "");
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
-  const mixR = parseInt(mixNormalized.slice(0, 2), 16);
-  const mixG = parseInt(mixNormalized.slice(2, 4), 16);
-  const mixB = parseInt(mixNormalized.slice(4, 6), 16);
-  const mixChannel = (base: number, target: number) =>
-    Math.round(base + (target - base) * clamp(amount, 0, 1));
-  const toHex = (value: number) => value.toString(16).padStart(2, "0");
-  return `#${toHex(mixChannel(r, mixR))}${toHex(mixChannel(g, mixG))}${toHex(
-    mixChannel(b, mixB)
-  )}`;
-};
-
-const SCISSORS_PROGRESS_BOOST = 1.45;
-const SCISSORS_PROGRESS_OFFSET = 0.03;
+const SCISSORS_PROGRESS_BOOST = 1;
+const SCISSORS_PROGRESS_OFFSET = 0;
 const SCISSORS_START_DELAY = 0.38;
 const SCISSORS_PIVOT_PERCENT = 40;
 const CUT_LINE_Y_LEFT = -70;
@@ -52,9 +35,17 @@ const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 0;
 const SPLIT_START = 0.12;
 const SPLIT_ROTATE_MAX = 0;
-const SNIP_COUNT = 6;
-const BLADE_MIN_ANGLE = 2;
-const BLADE_MAX_ANGLE = 22;
+const SNIP_COUNT = 3;
+const BLADE_MIN_ANGLE = 4;
+const BLADE_MAX_ANGLE = 30;
+const HANDLE_COLOR = "#121212";
+const HANDLE_HIGHLIGHT = "#2C2C2C";
+const BLADE_LIGHT = "#E6E6E6";
+const BLADE_MID = "#BDBDBD";
+const BLADE_DARK = "#8A8A8A";
+const BLADE_EDGE = "#5A5A5A";
+const PIVOT_OUTER = "#B00000";
+const PIVOT_INNER = "#E6E6E6";
 
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
@@ -133,7 +124,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   );
   const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
-  const snipPhase = Math.sin(cutProgress * Math.PI * SNIP_COUNT);
+  const snipPhase = Math.sin(scissorsProgress * Math.PI * SNIP_COUNT);
   const snip = (snipPhase + 1) / 2;
   const bladeAngle =
     BLADE_MIN_ANGLE + (BLADE_MAX_ANGLE - BLADE_MIN_ANGLE) * (1 - snip);
@@ -145,8 +136,6 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
-  const bladeLight = mixHex(toColors.fg, "#FFFFFF", 0.35);
-  const bladeDark = mixHex(toColors.fg, "#000000", 0.35);
 
   // Scissors position based on progress
   const scissorsLeft = cutX;
@@ -243,9 +232,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 x2="1"
                 y2="1"
               >
-                <stop offset="0%" stopColor={bladeLight} />
-                <stop offset="55%" stopColor={toColors.fg} />
-                <stop offset="100%" stopColor={bladeDark} />
+                <stop offset="0%" stopColor={BLADE_LIGHT} />
+                <stop offset="55%" stopColor={BLADE_MID} />
+                <stop offset="100%" stopColor={BLADE_DARK} />
               </linearGradient>
             </defs>
 
@@ -253,14 +242,14 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               style={{
                 transform: `rotate(${-bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.12s ease-out",
+                transition: "transform 0.18s ease-out",
               }}
             >
               {/* Top blade */}
               <path
                 d="M94 44 L60 48 L44 46 L26 34 L30 30 L46 37 L62 40 L94 39 Z"
                 fill="url(#scissorsBladeGradient)"
-                stroke={bladeDark}
+                stroke={BLADE_EDGE}
                 strokeWidth="0.9"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -272,7 +261,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 rx="10"
                 ry="12"
                 fill="none"
-                stroke={bladeDark}
+                stroke={HANDLE_COLOR}
                 strokeWidth="4"
               />
               <ellipse
@@ -281,7 +270,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 rx="6.5"
                 ry="8"
                 fill="none"
-                stroke={bladeLight}
+                stroke={HANDLE_HIGHLIGHT}
                 strokeWidth="1.2"
                 opacity="0.7"
               />
@@ -291,14 +280,14 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               style={{
                 transform: `rotate(${bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.12s ease-out",
+                transition: "transform 0.18s ease-out",
               }}
             >
               {/* Bottom blade */}
               <path
                 d="M94 56 L62 52 L46 54 L26 66 L30 70 L44 63 L60 60 L94 61 Z"
                 fill="url(#scissorsBladeGradient)"
-                stroke={bladeDark}
+                stroke={BLADE_EDGE}
                 strokeWidth="0.9"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -310,7 +299,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 rx="10"
                 ry="12"
                 fill="none"
-                stroke={bladeDark}
+                stroke={HANDLE_COLOR}
                 strokeWidth="4"
               />
               <ellipse
@@ -319,14 +308,14 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
                 rx="6.5"
                 ry="8"
                 fill="none"
-                stroke={bladeLight}
+                stroke={HANDLE_HIGHLIGHT}
                 strokeWidth="1.2"
                 opacity="0.7"
               />
             </g>
             {/* Pivot screw */}
-            <circle cx="40" cy="50" r="6" fill="#CC0000" />
-            <circle cx="40" cy="50" r="3" fill={bladeLight} />
+            <circle cx="40" cy="50" r="6" fill={PIVOT_OUTER} />
+            <circle cx="40" cy="50" r="3" fill={PIVOT_INNER} />
           </svg>
         </div>
 
