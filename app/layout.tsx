@@ -9,7 +9,7 @@ const _robotoCondensed = Roboto_Condensed({ subsets: ["latin", "cyrillic"], weig
 
 export const metadata: Metadata = {
   title: 'ШВЕЙНАЯ ФАБРИКА',
-  description: 'Швейная фабрика нового поколения. Качество, скорость, революция в производстве одежды.',
+  description: 'Швейная фабрика в Москве. ОПТ. Пошив одежды.',
   generator: 'v0.app',
   icons: {
     icon: [
