@@ -28,7 +28,7 @@ const hexToRgba = (hex: string, alpha: number) => {
 const SCISSORS_PROGRESS_BOOST = 1;
 const SCISSORS_PROGRESS_OFFSET = 0;
 const SCISSORS_PROGRESS_EASING = 1.2;
-const SCISSORS_START_DELAY = 0.38;
+const SCISSORS_START_DELAY = 0.2;
 const SCISSORS_PIVOT_PERCENT = 40;
 const CUT_LINE_Y_LEFT = -70;
 const CUT_LINE_Y_RIGHT = 170;
