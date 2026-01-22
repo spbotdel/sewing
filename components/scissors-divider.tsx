@@ -258,7 +258,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               {/* Top handle ring */}
               <ellipse
                 cx="12"
-                cy="28"
+                cy="18"
                 rx="10"
                 ry="12"
                 fill="none"
@@ -267,7 +267,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               />
               <ellipse
                 cx="12"
-                cy="28"
+                cy="18"
                 rx="6.5"
                 ry="8"
                 fill="none"
@@ -296,7 +296,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               {/* Bottom handle ring */}
               <ellipse
                 cx="12"
-                cy="72"
+                cy="82"
                 rx="10"
                 ry="12"
                 fill="none"
@@ -305,7 +305,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               />
               <ellipse
                 cx="12"
-                cy="72"
+                cy="82"
                 rx="6.5"
                 ry="8"
                 fill="none"
