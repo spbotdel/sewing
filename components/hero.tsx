@@ -46,10 +46,7 @@ export function Hero() {
             className={`font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl uppercase leading-none mb-6 transition-all duration-1000 delay-200 ${mounted ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"}`}
           >
             <span className="block text-secondary-foreground">СЕРИЙНЫЙ</span>
-            <span
-              className="block text-primary poster-shadow"
-              style={{ textShadow: "6px 6px 0 #F5F0E6" }}
-            >
+            <span className="block text-primary poster-shadow">
               ПОШИВ
             </span>
             <span className="block text-secondary-foreground text-3xl sm:text-4xl md:text-5xl mt-2">
