@@ -140,14 +140,22 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
         className="absolute inset-0 overflow-hidden"
         style={{ backgroundColor: toColors.bg }}
       >
-        {/* Uncut fabric on the right */}
+        {/* Right fabric with V notch */}
         <div
           className="absolute inset-0"
           style={{
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`,
+            clipPath: `polygon(
+              ${cutXOverlapMin}% 0,
+              100% 0,
+              100% 100%,
+              ${cutXOverlapMin}% 100%,
+              ${cutXOverlapMin}% ${CUT_LINE_Y_RIGHT}%,
+              ${cutX}% ${CUT_PIVOT_Y}%,
+              ${cutXOverlapMin}% ${CUT_LINE_Y_LEFT}%
+            )`,
           }}
         />
 
