@@ -25,7 +25,7 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const SCISSORS_PROGRESS_BOOST = 1;
+const SCISSORS_PROGRESS_BOOST = 1.4;
 const SCISSORS_PROGRESS_OFFSET = 0;
 const SCISSORS_PROGRESS_EASING = 1.2;
 const SCISSORS_START_DELAY = 0.2;
