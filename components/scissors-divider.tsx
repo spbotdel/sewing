@@ -25,6 +25,23 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+const mixHex = (hex: string, mix: string, amount: number) => {
+  const normalized = hex.replace("#", "");
+  const mixNormalized = mix.replace("#", "");
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  const mixR = parseInt(mixNormalized.slice(0, 2), 16);
+  const mixG = parseInt(mixNormalized.slice(2, 4), 16);
+  const mixB = parseInt(mixNormalized.slice(4, 6), 16);
+  const mixChannel = (base: number, target: number) =>
+    Math.round(base + (target - base) * clamp(amount, 0, 1));
+  const toHex = (value: number) => value.toString(16).padStart(2, "0");
+  return `#${toHex(mixChannel(r, mixR))}${toHex(mixChannel(g, mixG))}${toHex(
+    mixChannel(b, mixB)
+  )}`;
+};
+
 const SCISSORS_PROGRESS_BOOST = 1.45;
 const SCISSORS_PROGRESS_OFFSET = 0.03;
 const SCISSORS_START_DELAY = 0.38;
@@ -36,8 +53,8 @@ const CUT_OVERLAP = 0;
 const SPLIT_START = 0.12;
 const SPLIT_ROTATE_MAX = 0;
 const SNIP_COUNT = 6;
-const BLADE_BASE_ANGLE = 4;
-const BLADE_SWING = 10;
+const BLADE_MIN_ANGLE = 2;
+const BLADE_MAX_ANGLE = 22;
 
 export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const [scissorsProgress, setScissorsProgress] = useState(0);
@@ -116,8 +133,10 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   );
   const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
-  const snip = (Math.sin(cutProgress * Math.PI * SNIP_COUNT) + 1) / 2;
-  const bladeAngle = BLADE_BASE_ANGLE + BLADE_SWING * snip;
+  const snipPhase = Math.sin(cutProgress * Math.PI * SNIP_COUNT);
+  const snip = (snipPhase + 1) / 2;
+  const bladeAngle =
+    BLADE_MIN_ANGLE + (BLADE_MAX_ANGLE - BLADE_MIN_ANGLE) * (1 - snip);
   const textureColor = hexToRgba(fromColors.fg, 0.18);
   const fabricTexture = `repeating-linear-gradient(
     0deg,
@@ -126,6 +145,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
+  const bladeLight = mixHex(toColors.fg, "#FFFFFF", 0.35);
+  const bladeDark = mixHex(toColors.fg, "#000000", 0.35);
 
   // Scissors position based on progress
   const scissorsLeft = cutX;
@@ -211,57 +232,101 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             className="drop-shadow-2xl"
             style={{
               filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5))",
+              overflow: "visible",
             }}
           >
-            {/* Top blade */}
-            <path
-              d="M94 44 L60 48 L44 46 L26 34 L30 30 L46 37 L62 40 L94 39 Z"
-              fill={toColors.fg}
-              stroke={toColors.fg}
-              strokeWidth="0.8"
-              strokeLinejoin="round"
+            <defs>
+              <linearGradient
+                id="scissorsBladeGradient"
+                x1="0"
+                y1="0"
+                x2="1"
+                y2="1"
+              >
+                <stop offset="0%" stopColor={bladeLight} />
+                <stop offset="55%" stopColor={toColors.fg} />
+                <stop offset="100%" stopColor={bladeDark} />
+              </linearGradient>
+            </defs>
+
+            <g
               style={{
                 transform: `rotate(${-bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.2s ease-out",
+                transition: "transform 0.12s ease-out",
               }}
-            />
-            {/* Bottom blade */}
-            <path
-              d="M94 56 L62 52 L46 54 L26 66 L30 70 L44 63 L60 60 L94 61 Z"
-              fill={toColors.fg}
-              stroke={toColors.fg}
-              strokeWidth="0.8"
-              strokeLinejoin="round"
+            >
+              {/* Top blade */}
+              <path
+                d="M94 44 L60 48 L44 46 L26 34 L30 30 L46 37 L62 40 L94 39 Z"
+                fill="url(#scissorsBladeGradient)"
+                stroke={bladeDark}
+                strokeWidth="0.9"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+              {/* Top handle ring */}
+              <ellipse
+                cx="12"
+                cy="28"
+                rx="10"
+                ry="12"
+                fill="none"
+                stroke={bladeDark}
+                strokeWidth="4"
+              />
+              <ellipse
+                cx="12"
+                cy="28"
+                rx="6.5"
+                ry="8"
+                fill="none"
+                stroke={bladeLight}
+                strokeWidth="1.2"
+                opacity="0.7"
+              />
+            </g>
+
+            <g
               style={{
                 transform: `rotate(${bladeAngle}deg)`,
                 transformOrigin: "40px 50px",
-                transition: "transform 0.2s ease-out",
+                transition: "transform 0.12s ease-out",
               }}
-            />
-            {/* Top handle ring */}
-            <ellipse
-              cx="12"
-              cy="28"
-              rx="10"
-              ry="12"
-              fill="none"
-              stroke={toColors.fg}
-              strokeWidth="4"
-            />
-            {/* Bottom handle ring */}
-            <ellipse
-              cx="12"
-              cy="72"
-              rx="10"
-              ry="12"
-              fill="none"
-              stroke={toColors.fg}
-              strokeWidth="4"
-            />
+            >
+              {/* Bottom blade */}
+              <path
+                d="M94 56 L62 52 L46 54 L26 66 L30 70 L44 63 L60 60 L94 61 Z"
+                fill="url(#scissorsBladeGradient)"
+                stroke={bladeDark}
+                strokeWidth="0.9"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+              {/* Bottom handle ring */}
+              <ellipse
+                cx="12"
+                cy="72"
+                rx="10"
+                ry="12"
+                fill="none"
+                stroke={bladeDark}
+                strokeWidth="4"
+              />
+              <ellipse
+                cx="12"
+                cy="72"
+                rx="6.5"
+                ry="8"
+                fill="none"
+                stroke={bladeLight}
+                strokeWidth="1.2"
+                opacity="0.7"
+              />
+            </g>
             {/* Pivot screw */}
             <circle cx="40" cy="50" r="6" fill="#CC0000" />
-            <circle cx="40" cy="50" r="3" fill={toColors.fg} />
+            <circle cx="40" cy="50" r="3" fill={bladeLight} />
           </svg>
         </div>
 
