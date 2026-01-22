@@ -248,7 +248,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Top blade */}
               <path
-                d="M94 40 L66 46 L44 54 L26 34 L30 30 L48 42 L68 52 L94 50 Z"
+                d="M94 42 L64 46 L40 50 L26 34 L30 30 L46 40 L64 50 L94 48 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
@@ -286,7 +286,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Bottom blade */}
               <path
-                d="M94 60 L66 54 L44 46 L26 66 L30 70 L48 58 L68 48 L94 50 Z"
+                d="M94 58 L64 54 L40 50 L26 66 L30 70 L46 60 L64 50 L94 52 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
