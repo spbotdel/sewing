@@ -8,7 +8,7 @@ const _oswald = Oswald({ subsets: ["latin", "cyrillic"], weight: ["400", "500", 
 const _robotoCondensed = Roboto_Condensed({ subsets: ["latin", "cyrillic"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
-  title: 'КРАСНАЯ НИТЬ | Швейная Фабрика Будущего',
+  title: 'ШВЕЙНАЯ ФАБРИКА',
   description: 'Швейная фабрика нового поколения. Качество, скорость, революция в производстве одежды.',
   generator: 'v0.app',
   icons: {
