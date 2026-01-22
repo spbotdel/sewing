@@ -27,6 +27,7 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 const SCISSORS_PROGRESS_BOOST = 1;
 const SCISSORS_PROGRESS_OFFSET = 0;
+const SCISSORS_PROGRESS_EASING = 1.35;
 const SCISSORS_START_DELAY = 0.38;
 const SCISSORS_PIVOT_PERCENT = 40;
 const CUT_LINE_Y_LEFT = -70;
@@ -36,7 +37,7 @@ const CUT_OVERLAP = 0;
 const SPLIT_START = 0.12;
 const SPLIT_ROTATE_MAX = 0;
 const SNIP_COUNT = 3;
-const BLADE_MIN_ANGLE = 4;
+const BLADE_MIN_ANGLE = 1;
 const BLADE_MAX_ANGLE = 30;
 const HANDLE_COLOR = "#121212";
 const HANDLE_HIGHLIGHT = "#2C2C2C";
@@ -64,7 +65,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
       const total = viewportHeight + rect.height;
       const rawProgress = (viewportHeight - rect.top) / total;
       const clampedProgress = clamp(rawProgress, 0, 1);
-      const easedProgress = 1 - Math.pow(1 - clampedProgress, 2);
+      const easedProgress = Math.pow(clampedProgress, SCISSORS_PROGRESS_EASING);
       const boostedProgress = clamp(
         easedProgress * SCISSORS_PROGRESS_BOOST + SCISSORS_PROGRESS_OFFSET,
         0,
@@ -247,7 +248,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Top blade */}
               <path
-                d="M94 44 L60 48 L44 46 L26 34 L30 30 L46 37 L62 40 L94 39 Z"
+                d="M94 44 L62 47 L40 50 L26 34 L30 30 L46 37 L64 40 L94 39 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
@@ -285,7 +286,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Bottom blade */}
               <path
-                d="M94 56 L62 52 L46 54 L26 66 L30 70 L44 63 L60 60 L94 61 Z"
+                d="M94 56 L62 53 L40 50 L26 66 L30 70 L44 63 L64 60 L94 61 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
