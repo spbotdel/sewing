@@ -27,7 +27,7 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 const SCISSORS_PROGRESS_BOOST = 1;
 const SCISSORS_PROGRESS_OFFSET = 0;
-const SCISSORS_PROGRESS_EASING = 1.35;
+const SCISSORS_PROGRESS_EASING = 1.2;
 const SCISSORS_START_DELAY = 0.38;
 const SCISSORS_PIVOT_PERCENT = 40;
 const CUT_LINE_Y_LEFT = -70;
@@ -248,7 +248,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Top blade */}
               <path
-                d="M94 44 L62 47 L40 50 L26 34 L30 30 L46 37 L64 40 L94 39 Z"
+                d="M94 40 L66 46 L44 54 L26 34 L30 30 L48 42 L68 52 L94 50 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
@@ -286,7 +286,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
             >
               {/* Bottom blade */}
               <path
-                d="M94 56 L62 53 L40 50 L26 66 L30 70 L44 63 L64 60 L94 61 Z"
+                d="M94 60 L66 54 L44 46 L26 66 L30 70 L48 58 L68 48 L94 50 Z"
                 fill="url(#scissorsBladeGradient)"
                 stroke={BLADE_EDGE}
                 strokeWidth="0.9"
