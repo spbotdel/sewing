@@ -90,16 +90,6 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Decorative Elements */}
-        <div className="absolute bottom-10 left-4 md:left-10">
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-1 bg-primary" />
-            <span className="font-sans text-xs uppercase tracking-widest opacity-60">
-              МОСКВА
-            </span>
-          </div>
-        </div>
-
         {/* Scroll Indicator */}
         <div className="absolute bottom-10 right-4 md:right-10 flex flex-col items-center gap-2">
           <span
