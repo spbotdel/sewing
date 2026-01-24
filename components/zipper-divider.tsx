@@ -32,11 +32,11 @@ const ZIPPER_START_DELAY = 0.06;
 const ZIPPER_MIN_X = 4;
 const ZIPPER_MAX_X = 96;
 const OPEN_START = 0.05;
-const OPEN_SLOPE_MAX = 34;
-const OPEN_GAP_MAX = 32;
-const TEETH_HEIGHT = 18;
-const TEETH_PATTERN_WIDTH_CLOSED = 28;
-const TEETH_PATTERN_WIDTH_OPEN = 22;
+const OPEN_SLOPE_MAX = 24;
+const OPEN_GAP_MAX = 20;
+const TEETH_HEIGHT = 16;
+const TEETH_PATTERN_WIDTH_CLOSED = 22;
+const TEETH_PATTERN_WIDTH_OPEN = 18;
 
 export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const [zipperProgress, setZipperProgress] = useState(0);
@@ -124,7 +124,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   )`;
 
   const teethColor = hexToRgba(fromColors.fg, 1);
-  const teethShadow = hexToRgba(fromColors.fg, 0.55);
+  const teethShadow = hexToRgba(fromColors.fg, 0.35);
   const tapeColor = "transparent";
   const tapeEdge = "transparent";
   const sliderBody = fromColors.fg;
@@ -136,9 +136,9 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const openTopY = `calc(50% - ${openGap}px)`;
   const openBottomY = `calc(50% + ${openGap}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
-  const closedTeethShadow = `0 2px 3px ${teethShadow}`;
-  const openTeethShadow = `0 1px 2px ${teethShadow}`;
-  const openAngle = openProgress * 22;
+  const closedTeethShadow = "none";
+  const openTeethShadow = "none";
+  const openAngle = openProgress * 12;
 
   const TeethRow = ({
     left,
@@ -200,26 +200,26 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                 patternUnits="userSpaceOnUse"
               >
                 <rect
-                  x="2"
+                  x="1"
                   y="2"
-                  width="10"
-                  height="14"
+                  width="9"
+                  height="12"
                   rx="4"
                   fill={teethColor}
                   stroke={teethShadow}
-                  strokeWidth="0.9"
+                  strokeWidth="0.6"
                 />
                 <rect
-                  x="16"
+                  x="12"
                   y="2"
-                  width="10"
-                  height="14"
+                  width="9"
+                  height="12"
                   rx="4"
                   fill={teethColor}
                   stroke={teethShadow}
-                  strokeWidth="0.9"
+                  strokeWidth="0.6"
                 />
-                <rect x="10" y="6" width="8" height="6" rx="2" fill={teethColor} />
+                <rect x="9" y="6" width="4" height="4" rx="2" fill={teethColor} />
               </pattern>
             ) : (
               <pattern
@@ -231,17 +231,17 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                 <rect
                   x="2"
                   y="2"
-                  width="14"
-                  height="14"
-                  rx="2"
+                  width="12"
+                  height="12"
+                  rx="4"
                   fill={teethColor}
                   stroke={teethShadow}
-                  strokeWidth="0.8"
+                  strokeWidth="0.6"
                 />
                 <rect
-                  x="16"
-                  y="6"
-                  width="4"
+                  x="14"
+                  y="5"
+                  width="3"
                   height="6"
                   rx="1.5"
                   fill={teethColor}
@@ -361,7 +361,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
             viewBox="0 0 110 70"
             fill="none"
             style={{
-              filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.35))",
               overflow: "visible",
             }}
           >
