@@ -393,51 +393,38 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                 <stop offset="60%" stopColor="rgba(255,255,255,0)" />
               </linearGradient>
             </defs>
-            <rect
-              x="20"
-              y="30"
-              width="52"
-              height="40"
-              rx="12"
-              fill={`url(#${sliderGradientId})`}
-              stroke={sliderEdge}
-              strokeWidth="2"
-            />
-            <rect
-              x="68"
-              y="26"
-              width="30"
-              height="48"
-              rx="15"
-              fill={`url(#${sliderGradientId})`}
-              stroke={sliderEdge}
-              strokeWidth="2"
-            />
-            <rect
-              x="42"
-              y="68"
-              width="16"
-              height="16"
-              rx="8"
-              fill={`url(#${sliderGradientId})`}
-              stroke={sliderEdge}
-              strokeWidth="2"
-            />
-            <rect
-              x="32"
-              y="84"
-              width="36"
-              height="26"
-              rx="13"
-              fill={`url(#${sliderGradientId})`}
-              stroke={sliderEdge}
-              strokeWidth="2"
-            />
-            <circle cx="50" cy="97" r="6" fill={sliderSlot} />
-            <rect x="34" y="38" width="20" height="24" rx="5" fill={sliderSlot} />
-            <rect x="78" y="40" width="10" height="18" rx="5" fill={sliderSlot} />
             <path
-              d="M24 34 L90 34"
+              d="M8 44
+                 H30
+                 L36 38
+                 H68
+                 A26 26 0 0 1 110 60
+                 A26 26 0 0 1 68 82
+                 H36
+                 L30 76
+                 H8
+                 Z"
+              fill={`url(#${sliderGradientId})`}
+              stroke={sliderEdge}
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M44 46
+                 H70
+                 A6 6 0 0 1 76 52
+                 V68
+                 A6 6 0 0 1 70 74
+                 H44
+                 A6 6 0 0 1 38 68
+                 V52
+                 A6 6 0 0 1 44 46
+                 Z"
+              fill={sliderSlot}
+            />
+            <rect x="12" y="52" width="14" height="16" rx="2" fill={sliderSlot} />
+            <path
+              d="M14 46 L94 46"
               stroke={`url(#${sliderHighlightId})`}
               strokeWidth="2"
               strokeLinecap="round"
