@@ -31,12 +31,12 @@ const ZIPPER_PROGRESS_EASING = 1.15;
 const ZIPPER_START_DELAY = 0.06;
 const ZIPPER_MIN_X = 4;
 const ZIPPER_MAX_X = 96;
-const OPEN_START = 0.08;
-const OPEN_SLOPE_MAX = 18;
-const OPEN_GAP_MAX = 18;
-const TEETH_HEIGHT = 12;
-const TEETH_PATTERN_WIDTH_CLOSED = 18;
-const TEETH_PATTERN_WIDTH_OPEN = 14;
+const OPEN_START = 0.06;
+const OPEN_SLOPE_MAX = 28;
+const OPEN_GAP_MAX = 28;
+const TEETH_HEIGHT = 18;
+const TEETH_PATTERN_WIDTH_CLOSED = 28;
+const TEETH_PATTERN_WIDTH_OPEN = 22;
 
 export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const [zipperProgress, setZipperProgress] = useState(0);
@@ -186,18 +186,18 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                 patternUnits="userSpaceOnUse"
               >
                 <path
-                  d="M2 6
-                     C2 3.2 4.2 2 6.4 2
-                     C7.9 2 8.9 2.7 9.8 3.6
-                     C10.7 2.7 11.7 2 13.2 2
-                     C15.4 2 17.4 3.2 17.4 6
-                     C17.4 8.8 15.4 10 13.2 10
-                     C11.7 10 10.7 9.3 9.8 8.4
-                     C8.9 9.3 7.9 10 6.4 10
-                     C4.2 10 2 8.8 2 6 Z"
+                  d="M3 9
+                     C3 4.5 6.5 3 10 3
+                     C12 3 13.8 3.8 15.4 5.2
+                     C17 3.8 18.8 3 21.2 3
+                     C24.8 3 28 4.5 28 9
+                     C28 13.5 24.8 15 21.2 15
+                     C18.8 15 17 14.2 15.4 12.8
+                     C13.8 14.2 12 15 10 15
+                     C6.5 15 3 13.5 3 9 Z"
                   fill={teethColor}
                   stroke={teethShadow}
-                  strokeWidth="0.6"
+                  strokeWidth="0.9"
                 />
               </pattern>
             ) : (
@@ -210,18 +210,18 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                 <rect
                   x="2"
                   y="2"
-                  width="7"
-                  height="8"
+                  width="12"
+                  height="14"
                   rx="3"
                   fill={teethColor}
                   stroke={teethShadow}
-                  strokeWidth="0.6"
+                  strokeWidth="0.9"
                 />
                 <rect
-                  x="9"
-                  y="4"
-                  width="3"
-                  height="4"
+                  x="14"
+                  y="6"
+                  width="5"
+                  height="6"
                   rx="1"
                   fill={teethColor}
                 />
@@ -340,47 +340,42 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               overflow: "visible",
             }}
           >
-            <path
-              d="M10 18
-                 H38
-                 Q46 18 46 26
-                 V38
-                 Q46 46 38 46
-                 H26
-                 L10 34
-                 Q8 32 10 30
-                 Z"
+            <rect
+              x="10"
+              y="18"
+              width="34"
+              height="28"
+              rx="2"
               fill={sliderBody}
               stroke={sliderEdge}
               strokeWidth="2"
-              strokeLinejoin="round"
             />
-            <rect x="24" y="24" width="14" height="16" rx="3" fill={sliderSlot} />
+            <rect x="22" y="24" width="14" height="16" rx="2" fill={sliderSlot} />
             <rect
-              x="40"
+              x="44"
+              y="18"
+              width="12"
+              height="28"
+              rx="2"
+              fill={sliderBody}
+              stroke={sliderEdge}
+              strokeWidth="2"
+            />
+            <rect
+              x="50"
               y="22"
               width="10"
               height="20"
-              rx="4"
-              fill={sliderBody}
+              rx="2"
+              fill="none"
               stroke={sliderEdge}
               strokeWidth="2"
             />
             <path
-              d="M16 20 L36 20"
+              d="M12 20 L38 20"
               stroke={sliderHighlight}
               strokeWidth="2"
               strokeLinecap="round"
-            />
-            <rect
-              x="40"
-              y="44"
-              width="14"
-              height="10"
-              rx="5"
-              fill="none"
-              stroke={sliderEdge}
-              strokeWidth="2"
             />
           </svg>
         </div>
