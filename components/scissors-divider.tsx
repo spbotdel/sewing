@@ -30,8 +30,7 @@ const SCISSORS_PROGRESS_OFFSET = 0;
 const SCISSORS_PROGRESS_EASING = 1.2;
 const SCISSORS_START_DELAY = 0.2;
 const SCISSORS_PIVOT_PERCENT = 40;
-const CUT_LINE_Y_LEFT = -70;
-const CUT_LINE_Y_RIGHT = 170;
+const CUT_LINE_SLOPE = 2;
 const CUT_PIVOT_Y = 50;
 const CUT_OVERLAP = 0;
 const SPLIT_START = 0.12;
@@ -127,15 +126,18 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   );
   const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
+  const cutSpan = reverse ? 100 - cutX : cutX;
+  const cutLineYTop = CUT_PIVOT_Y - CUT_LINE_SLOPE * cutSpan;
+  const cutLineYBottom = CUT_PIVOT_Y + CUT_LINE_SLOPE * cutSpan;
   const topRotate = -splitRotate;
   const bottomRotate = splitRotate;
   const cutOrigin = `${cutX}% ${CUT_PIVOT_Y}%`;
   const topClipPath = reverse
-    ? `polygon(${cutX}% 0, 100% 0, 100% ${CUT_LINE_Y_LEFT}%, ${cutX}% ${CUT_PIVOT_Y}%)`
-    : `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`;
+    ? `polygon(${cutX}% 0, 100% 0, 100% ${cutLineYTop}%, ${cutX}% ${CUT_PIVOT_Y}%)`
+    : `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${cutLineYTop}%)`;
   const bottomClipPath = reverse
-    ? `polygon(${cutX}% ${CUT_PIVOT_Y}%, 100% ${CUT_LINE_Y_RIGHT}%, 100% 100%, ${cutX}% 100%)`
-    : `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
+    ? `polygon(${cutX}% ${CUT_PIVOT_Y}%, 100% ${cutLineYBottom}%, 100% 100%, ${cutX}% 100%)`
+    : `polygon(0 ${cutLineYBottom}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
   const uncutClipPath = reverse
     ? `polygon(0 0, ${cutXOverlapMin}% 0, ${cutXOverlapMin}% 100%, 0 100%)`
     : `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`;
