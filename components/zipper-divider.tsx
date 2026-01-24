@@ -133,12 +133,13 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
 
   const patternBaseId = useId().replace(/:/g, "");
-  const openTopY = `calc(50% - ${openGap}px)`;
-  const openBottomY = `calc(50% + ${openGap}px)`;
+  const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
+  const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
   const closedTeethShadow = "none";
   const openTeethShadow = "none";
-  const openAngle = openProgress * 12;
+  const openAngle =
+    zipX <= 1 ? 0 : (Math.atan(openSlope / zipX) * 180) / Math.PI;
 
   const TeethRow = ({
     left,
