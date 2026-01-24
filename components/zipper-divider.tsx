@@ -373,9 +373,9 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           }}
         >
           <svg
-            width="110"
-            height="70"
-            viewBox="0 0 110 70"
+            width="120"
+            height="120"
+            viewBox="0 0 120 120"
             fill="none"
             style={{
               overflow: "visible",
@@ -394,40 +394,50 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               </linearGradient>
             </defs>
             <rect
-              x="8"
-              y="18"
-              width="46"
-              height="34"
-              rx="10"
+              x="20"
+              y="30"
+              width="52"
+              height="40"
+              rx="12"
               fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
             <rect
-              x="50"
-              y="14"
-              width="34"
-              height="42"
-              rx="14"
+              x="68"
+              y="26"
+              width="30"
+              height="48"
+              rx="15"
               fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
             <rect
-              x="84"
-              y="22"
-              width="20"
+              x="42"
+              y="68"
+              width="16"
+              height="16"
+              rx="8"
+              fill={`url(#${sliderGradientId})`}
+              stroke={sliderEdge}
+              strokeWidth="2"
+            />
+            <rect
+              x="32"
+              y="84"
+              width="36"
               height="26"
               rx="13"
               fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
-            <circle cx="94" cy="35" r="5" fill="none" stroke={sliderEdge} strokeWidth="2" />
-            <rect x="22" y="26" width="14" height="18" rx="3" fill={sliderSlot} />
-            <rect x="60" y="24" width="12" height="12" rx="2" fill={sliderSlot} />
+            <circle cx="50" cy="97" r="6" fill={sliderSlot} />
+            <rect x="34" y="38" width="20" height="24" rx="5" fill={sliderSlot} />
+            <rect x="78" y="40" width="10" height="18" rx="5" fill={sliderSlot} />
             <path
-              d="M12 22 L82 22"
+              d="M24 34 L90 34"
               stroke={`url(#${sliderHighlightId})`}
               strokeWidth="2"
               strokeLinecap="round"
