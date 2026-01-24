@@ -125,19 +125,12 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   );
   const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
   const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
-  const direction = reverse ? -1 : 1;
-  const topRotate = -splitRotate * direction;
-  const bottomRotate = splitRotate * direction;
+  const topRotate = -splitRotate;
+  const bottomRotate = splitRotate;
   const cutOrigin = `${cutX}% ${CUT_PIVOT_Y}%`;
-  const topClipPath = reverse
-    ? `polygon(${cutX}% 0, 100% 0, 100% ${CUT_LINE_Y_LEFT}%, ${cutX}% ${CUT_PIVOT_Y}%)`
-    : `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`;
-  const bottomClipPath = reverse
-    ? `polygon(${cutX}% ${CUT_PIVOT_Y}%, 100% ${CUT_LINE_Y_RIGHT}%, 100% 100%, ${cutX}% 100%)`
-    : `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
-  const uncutClipPath = reverse
-    ? "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)"
-    : `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`;
+  const topClipPath = `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`;
+  const bottomClipPath = `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
+  const uncutClipPath = `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`;
   const snipPhase = Math.sin(scissorsProgress * Math.PI * SNIP_COUNT);
   const snip = (snipPhase + 1) / 2;
   const bladeAngle =
