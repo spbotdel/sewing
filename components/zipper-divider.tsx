@@ -140,7 +140,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const tapeEdge = "transparent";
   const sliderBody = "#1B1B1B";
   const sliderEdge = "#4B4B4B";
-  const sliderSlot = "#E6E6E6";
+  const sliderSlot = "#D0D0D0";
   const sliderHighlight = "rgba(255,255,255,0.5)";
 
   const patternBaseId = useId().replace(/:/g, "");
