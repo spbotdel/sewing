@@ -109,6 +109,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const fromColors = themeColors[fromTheme];
   const toColors = themeColors[toTheme];
   const reverse = scrollDirection === "up";
+  const sliderRotation = reverse ? 0 : 180;
 
   const zipProgress = clamp(
     (zipperProgress - ZIPPER_START_DELAY) / (1 - ZIPPER_START_DELAY),
@@ -369,7 +370,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           className="absolute top-1/2 z-30"
           style={{
             left: `${zipX}%`,
-            transform: `translate(-50%, -50%) rotate(${reverse ? 180 : 0}deg)`,
+            transform: `translate(-50%, -50%) rotate(${sliderRotation}deg)`,
           }}
         >
           <svg
