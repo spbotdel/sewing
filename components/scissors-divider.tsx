@@ -139,6 +139,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 4px
   )`;
   const mirrorScale = reverse ? -1 : 1;
+  const scissorsPivot = reverse
+    ? 100 - SCISSORS_PIVOT_PERCENT
+    : SCISSORS_PIVOT_PERCENT;
 
   // Scissors position based on progress
   const scissorsLeft = cutX;
@@ -221,7 +224,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           className="absolute top-1/2 z-20"
           style={{
             left: `${scissorsLeft}%`,
-            transform: `translate(-${SCISSORS_PIVOT_PERCENT}%, -50%) rotate(${reverse ? 180 : 0}deg)`,
+            transform: `translate(-${scissorsPivot}%, -50%) rotate(${reverse ? 180 : 0}deg)`,
           }}
         >
           <svg
