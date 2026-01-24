@@ -394,46 +394,43 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               </linearGradient>
             </defs>
             <rect
-              x="10"
-              y="20"
-              width="48"
-              height="30"
-              rx="2"
+              x="8"
+              y="18"
+              width="46"
+              height="34"
+              rx="10"
               fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
             <rect
-              x="54"
-              y="16"
-              width="42"
-              height="38"
-              rx="19"
+              x="50"
+              y="14"
+              width="34"
+              height="42"
+              rx="14"
               fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
-            <rect x="22" y="26" width="12" height="12" rx="2" fill={sliderSlot} />
             <rect
-              x="66"
-              y="24"
-              width="22"
-              height="22"
-              rx="4"
-              fill={sliderSlot}
+              x="84"
+              y="22"
+              width="20"
+              height="26"
+              rx="13"
+              fill={`url(#${sliderGradientId})`}
+              stroke={sliderEdge}
+              strokeWidth="2"
             />
+            <circle cx="94" cy="35" r="5" fill="none" stroke={sliderEdge} strokeWidth="2" />
+            <rect x="22" y="26" width="14" height="18" rx="3" fill={sliderSlot} />
+            <rect x="60" y="24" width="12" height="12" rx="2" fill={sliderSlot} />
             <path
-              d="M12 22 L52 22"
+              d="M12 22 L82 22"
               stroke={`url(#${sliderHighlightId})`}
               strokeWidth="2"
               strokeLinecap="round"
-            />
-            <path
-              d="M26 28 L30 32 L26 36 L30 40"
-              stroke={sliderEdge}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
             />
           </svg>
         </div>
