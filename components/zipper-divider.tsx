@@ -132,8 +132,10 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     ${textureColor} 4px
   )`;
 
-  const teethColor = hexToRgba(fromColors.fg, 1);
-  const teethShadow = hexToRgba(fromColors.fg, 0.35);
+  const closedTeethColor = fromColors.fg;
+  const openTeethColor = toColors.fg;
+  const closedTeethShadow = hexToRgba(fromColors.fg, 0.25);
+  const openTeethShadow = hexToRgba(toColors.fg, 0.25);
   const tapeColor = "transparent";
   const tapeEdge = "transparent";
   const sliderBody = fromColors.fg;
@@ -142,11 +144,9 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
 
   const patternBaseId = useId().replace(/:/g, "");
-  const openTopY = `calc(50% - ${openGap}px)`;
-  const openBottomY = `calc(50% + ${openGap}px)`;
+  const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
+  const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
-  const closedTeethShadow = "none";
-  const openTeethShadow = "none";
   const openAngle =
     zipX <= 1 || containerSize.width <= 1
       ? 0
@@ -163,7 +163,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     variant,
     idSuffix,
     rotateDeg = 0,
-    centered = false,
   }: {
     left?: string;
     right?: string;
@@ -173,15 +172,13 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     variant: "open" | "closed";
     idSuffix: string;
     rotateDeg?: number;
-    centered?: boolean;
   }) => {
     const patternId = `${patternBaseId}-teeth-${variant}-${idSuffix}`;
     const patternWidth =
       variant === "closed" ? TEETH_PATTERN_WIDTH_CLOSED : TEETH_PATTERN_WIDTH_OPEN;
+    const toothColor = variant === "closed" ? closedTeethColor : openTeethColor;
+    const toothShadow = variant === "closed" ? closedTeethShadow : openTeethShadow;
     const transforms: string[] = [];
-    if (centered) {
-      transforms.push("translateY(-50%)");
-    }
     if (Math.abs(rotateDeg) > 0.1) {
       transforms.push(`rotate(${rotateDeg}deg)`);
     }
@@ -198,10 +195,10 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           backgroundColor: tapeColor,
           borderTop: "none",
           borderBottom: "none",
-          boxShadow: variant === "closed" ? closedTeethShadow : openTeethShadow,
+          boxShadow: "none",
           opacity,
           transform: transforms.length ? transforms.join(" ") : undefined,
-          transformOrigin: centered ? "100% 50%" : undefined,
+          transformOrigin: Math.abs(rotateDeg) > 0.1 ? "100% 50%" : undefined,
         }}
       >
         <svg width="100%" height="100%" aria-hidden="true" focusable="false">
@@ -219,8 +216,8 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                   width="9"
                   height="12"
                   rx="4"
-                  fill={teethColor}
-                  stroke={teethShadow}
+                  fill={toothColor}
+                  stroke={toothShadow}
                   strokeWidth="0.6"
                 />
                 <rect
@@ -229,11 +226,11 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                   width="9"
                   height="12"
                   rx="4"
-                  fill={teethColor}
-                  stroke={teethShadow}
+                  fill={toothColor}
+                  stroke={toothShadow}
                   strokeWidth="0.6"
                 />
-                <rect x="9" y="6" width="4" height="4" rx="2" fill={teethColor} />
+                <rect x="9" y="6" width="4" height="4" rx="2" fill={toothColor} />
               </pattern>
             ) : (
               <pattern
@@ -248,8 +245,8 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                   width="12"
                   height="12"
                   rx="4"
-                  fill={teethColor}
-                  stroke={teethShadow}
+                  fill={toothColor}
+                  stroke={toothShadow}
                   strokeWidth="0.6"
                 />
                 <rect
@@ -258,7 +255,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
                   width="3"
                   height="6"
                   rx="1.5"
-                  fill={teethColor}
+                  fill={toothColor}
                 />
               </pattern>
             )}
@@ -339,7 +336,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           variant="open"
           idSuffix="open-top"
           rotateDeg={-openAngle}
-          centered
         />
         <TeethRow
           left="0"
@@ -349,7 +345,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           variant="open"
           idSuffix="open-bottom"
           rotateDeg={openAngle}
-          centered
         />
 
         {/* Zipper teeth (closed row) */}
