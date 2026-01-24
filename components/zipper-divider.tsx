@@ -306,6 +306,8 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
+              transform: `translateY(${openGap}px)`,
+              transition: "transform 0.2s ease-out",
             }}
           />
         </div>
@@ -326,6 +328,8 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
+              transform: `translateY(${-openGap}px)`,
+              transition: "transform 0.2s ease-out",
             }}
           />
         </div>
