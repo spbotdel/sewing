@@ -138,12 +138,14 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const openTeethShadow = hexToRgba(openTeethColor, 0.25);
   const tapeColor = "transparent";
   const tapeEdge = "transparent";
-  const sliderBody = fromColors.fg;
-  const sliderEdge = hexToRgba(fromColors.fg, 0.7);
-  const sliderSlot = hexToRgba(fromColors.bg, 0.92);
-  const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
+  const sliderBody = "#1B1B1B";
+  const sliderEdge = "#4B4B4B";
+  const sliderSlot = "#E6E6E6";
+  const sliderHighlight = "rgba(255,255,255,0.5)";
 
   const patternBaseId = useId().replace(/:/g, "");
+  const sliderGradientId = `${patternBaseId}-slider-metal`;
+  const sliderHighlightId = `${patternBaseId}-slider-highlight`;
   const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
@@ -379,13 +381,25 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               overflow: "visible",
             }}
           >
+            <defs>
+              <linearGradient id={sliderGradientId} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#3B3B3B" />
+                <stop offset="45%" stopColor="#1B1B1B" />
+                <stop offset="75%" stopColor="#2A2A2A" />
+                <stop offset="100%" stopColor="#4A4A4A" />
+              </linearGradient>
+              <linearGradient id={sliderHighlightId} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.65)" />
+                <stop offset="60%" stopColor="rgba(255,255,255,0)" />
+              </linearGradient>
+            </defs>
             <rect
               x="10"
               y="20"
               width="48"
               height="30"
               rx="2"
-              fill={sliderBody}
+              fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
@@ -395,7 +409,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               width="42"
               height="38"
               rx="19"
-              fill={sliderBody}
+              fill={`url(#${sliderGradientId})`}
               stroke={sliderEdge}
               strokeWidth="2"
             />
@@ -410,7 +424,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
             />
             <path
               d="M12 22 L52 22"
-              stroke={sliderHighlight}
+              stroke={`url(#${sliderHighlightId})`}
               strokeWidth="2"
               strokeLinecap="round"
             />
