@@ -111,6 +111,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const toColors = themeColors[toTheme];
 
   const reverse = scrollDirection === "up";
+  const baseColors = reverse ? fromColors : toColors;
+  const fabricColors = reverse ? toColors : fromColors;
 
   const cutProgress = clamp(
     (scissorsProgress - SCISSORS_START_DELAY) / (1 - SCISSORS_START_DELAY),
@@ -149,6 +151,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
+  const baseTexture = reverse ? fabricTexture : "none";
+  const pieceTexture = reverse ? "none" : fabricTexture;
   const scissorsPivot = SCISSORS_PIVOT_PERCENT;
 
   // Scissors position based on progress
@@ -162,14 +166,14 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     >
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: toColors.bg }}
+        style={{ backgroundColor: baseColors.bg, backgroundImage: baseTexture }}
       >
         {/* Uncut fabric */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundColor: fromColors.bg,
-            backgroundImage: fabricTexture,
+            backgroundColor: fabricColors.bg,
+            backgroundImage: pieceTexture,
             backgroundPosition: "0 0",
             clipPath: uncutClipPath,
           }}
@@ -188,8 +192,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fromColors.bg,
-              backgroundImage: fabricTexture,
+              backgroundColor: fabricColors.bg,
+              backgroundImage: pieceTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-topRotate}deg)`,
               transformOrigin: cutOrigin,
@@ -210,8 +214,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fromColors.bg,
-              backgroundImage: fabricTexture,
+              backgroundColor: fabricColors.bg,
+              backgroundImage: pieceTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-bottomRotate}deg)`,
               transformOrigin: cutOrigin,
