@@ -137,6 +137,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
+  const textureFlip = reverse ? -1 : 1;
+  const topTextureTransform = `rotate(${splitRotate}deg) scaleX(${textureFlip})`;
+  const bottomTextureTransform = `rotate(${-splitRotate}deg) scaleX(${textureFlip})`;
 
   // Scissors position based on progress
   const scissorsLeft = cutX;
@@ -178,7 +181,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
-              transform: `rotate(${splitRotate}deg)`,
+              transform: topTextureTransform,
               transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
             }}
           />
@@ -200,7 +203,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
-              transform: `rotate(${-splitRotate}deg)`,
+              transform: bottomTextureTransform,
               transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
             }}
           />
