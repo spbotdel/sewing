@@ -20,7 +20,7 @@ export function Hero() {
       />
 
       {/* Single Gear - scroll animated */}
-      <div className="absolute left-[56%] top-[60%] -translate-x-1/2 -translate-y-1/2 opacity-20">
+      <div className="absolute left-[56%] top-[68%] -translate-x-1/2 -translate-y-1/2 opacity-20">
         <Gear size={180} color="#F5F0E6" speed={0.4} />
       </div>
 
