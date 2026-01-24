@@ -37,6 +37,7 @@ const OPEN_GAP_MAX = 20;
 const TEETH_HEIGHT = 16;
 const TEETH_PATTERN_WIDTH_CLOSED = 18;
 const TEETH_PATTERN_WIDTH_OPEN = 18;
+const ZIPPER_SEAM_OVERLAP_PX = 2;
 
 export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const [zipperProgress, setZipperProgress] = useState(0);
@@ -150,6 +151,11 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
+  const seamOverlapPercent =
+    containerSize.width > 1
+      ? (ZIPPER_SEAM_OVERLAP_PX / containerSize.width) * 100
+      : 0;
+  const zipXSeam = clamp(zipX - seamOverlapPercent, 0, 100);
   const openAngle =
     zipX <= 1 || containerSize.width <= 1
       ? 0
@@ -286,7 +292,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
             backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
-            clipPath: `polygon(${zipX}% 0, 100% 0, 100% 100%, ${zipX}% 100%)`,
+            clipPath: `polygon(${zipXSeam}% 0, 100% 0, 100% 100%, ${zipXSeam}% 100%)`,
           }}
         />
 
@@ -306,8 +312,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
-              transform: `translateY(${openGap}px)`,
-              transition: "transform 0.2s ease-out",
             }}
           />
         </div>
@@ -328,8 +332,6 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
-              transform: `translateY(${-openGap}px)`,
-              transition: "transform 0.2s ease-out",
             }}
           />
         </div>
