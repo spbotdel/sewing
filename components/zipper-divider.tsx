@@ -126,7 +126,8 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const tapeColor = hexToRgba(fromColors.fg, 0.18);
   const sliderBody = fromColors.fg;
   const sliderEdge = hexToRgba(fromColors.fg, 0.7);
-  const sliderSlot = hexToRgba(fromColors.bg, 0.9);
+  const sliderSlot = hexToRgba(fromColors.bg, 0.92);
+  const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
 
   const teethPattern = `repeating-linear-gradient(90deg, ${teethColor} 0 7px, transparent 7px 12px)`;
   const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
@@ -254,31 +255,43 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
               overflow: "visible",
             }}
           >
-            <rect
-              x="14"
-              y="10"
-              width="36"
-              height="26"
-              rx="8"
+            <path
+              d="M50 14
+                 Q56 14 56 20
+                 L56 42
+                 Q56 48 50 48
+                 L28 48
+                 L14 34
+                 Q12 32 14 30
+                 L28 14
+                 Z"
               fill={sliderBody}
               stroke={sliderEdge}
               strokeWidth="2"
-            />
-            <rect
-              x="26"
-              y="15"
-              width="12"
-              height="16"
-              rx="4"
-              fill={sliderSlot}
+              strokeLinejoin="round"
             />
             <path
-              d="M32 36 L32 50"
-              stroke={sliderEdge}
-              strokeWidth="4"
+              d="M26 22 L16 32 L26 42 L34 42 L34 22 Z"
+              fill={sliderSlot}
+            />
+            <rect x="32" y="20" width="18" height="16" rx="5" fill={sliderSlot} />
+            <path
+              d="M30 18 L52 18"
+              stroke={sliderHighlight}
+              strokeWidth="2"
               strokeLinecap="round"
             />
-            <circle cx="32" cy="54" r="6" fill={sliderEdge} />
+            <rect x="36" y="44" width="8" height="8" rx="2" fill={sliderEdge} />
+            <rect
+              x="30"
+              y="52"
+              width="20"
+              height="10"
+              rx="5"
+              fill="none"
+              stroke={sliderEdge}
+              strokeWidth="3"
+            />
           </svg>
         </div>
       </div>
