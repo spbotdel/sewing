@@ -335,7 +335,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           opacity={openProgress}
           variant="open"
           idSuffix="open-top"
-          rotateDeg={-openAngle}
+          rotateDeg={openAngle}
         />
         <TeethRow
           left="0"
@@ -344,7 +344,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           opacity={openProgress}
           variant="open"
           idSuffix="open-bottom"
-          rotateDeg={openAngle}
+          rotateDeg={-openAngle}
         />
 
         {/* Zipper teeth (closed row) */}
