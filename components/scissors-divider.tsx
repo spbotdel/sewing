@@ -118,13 +118,14 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     1
   );
   const cutX = cutProgress * 100;
+  const fabricCutX = reverse ? 100 - cutX : cutX;
   const splitProgress = clamp(
     (cutProgress - SPLIT_START) / (1 - SPLIT_START),
     0,
     1
   );
   const splitRotate = splitProgress * SPLIT_ROTATE_MAX;
-  const cutXOverlapMin = clamp(cutX - CUT_OVERLAP, 0, 100);
+  const cutXOverlapMin = clamp(fabricCutX - CUT_OVERLAP, 0, 100);
   const snipPhase = Math.sin(scissorsProgress * Math.PI * SNIP_COUNT);
   const snip = (snipPhase + 1) / 2;
   const bladeAngle =
@@ -169,9 +170,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
         <div
           className="absolute inset-0 transition-transform"
           style={{
-            clipPath: `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`,
+            clipPath: `polygon(0 0, ${fabricCutX}% 0, ${fabricCutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`,
             transform: `rotate(${-splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+            transformOrigin: `${fabricCutX}% ${CUT_PIVOT_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         >
@@ -182,7 +183,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${splitRotate}deg)`,
-              transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+              transformOrigin: `${fabricCutX}% ${CUT_PIVOT_Y}%`,
             }}
           />
         </div>
@@ -191,9 +192,9 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
         <div
           className="absolute inset-0 transition-transform"
           style={{
-            clipPath: `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`,
+            clipPath: `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${fabricCutX}% ${CUT_PIVOT_Y}%, ${fabricCutX}% 100%, 0 100%)`,
             transform: `rotate(${splitRotate}deg)`,
-            transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+            transformOrigin: `${fabricCutX}% ${CUT_PIVOT_Y}%`,
             transition: "transform 0.2s ease-out",
           }}
         >
@@ -204,7 +205,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-splitRotate}deg)`,
-              transformOrigin: `${cutX}% ${CUT_PIVOT_Y}%`,
+              transformOrigin: `${fabricCutX}% ${CUT_PIVOT_Y}%`,
             }}
           />
         </div>
