@@ -133,9 +133,9 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   )`;
 
   const closedTeethColor = fromColors.fg;
-  const openTeethColor = toColors.fg;
+  const openTeethColor = "#9A9A9A";
   const closedTeethShadow = hexToRgba(fromColors.fg, 0.25);
-  const openTeethShadow = hexToRgba(toColors.fg, 0.25);
+  const openTeethShadow = hexToRgba(openTeethColor, 0.25);
   const tapeColor = "transparent";
   const tapeEdge = "transparent";
   const sliderBody = fromColors.fg;
