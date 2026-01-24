@@ -41,9 +41,11 @@ const TEETH_PATTERN_WIDTH_OPEN = 18;
 export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const [zipperProgress, setZipperProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+  const [containerSize, setContainerSize] = useState({ width: 1, height: 1 });
   const ref = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
   const rafId = useRef<number | null>(null);
+  const sizeRef = useRef({ width: 1, height: 1 });
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
@@ -51,6 +53,13 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     const update = () => {
       if (!ref.current) return;
       const rect = ref.current.getBoundingClientRect();
+      if (
+        Math.abs(sizeRef.current.width - rect.width) > 0.5 ||
+        Math.abs(sizeRef.current.height - rect.height) > 0.5
+      ) {
+        sizeRef.current = { width: rect.width, height: rect.height };
+        setContainerSize(sizeRef.current);
+      }
       const viewportHeight = window.innerHeight || 1;
       const total = viewportHeight + rect.height;
       const rawProgress = (viewportHeight - rect.top) / total;
@@ -133,13 +142,17 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
 
   const patternBaseId = useId().replace(/:/g, "");
-  const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
-  const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
+  const openTopY = `calc(50% - ${openGap}px)`;
+  const openBottomY = `calc(50% + ${openGap}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
   const closedTeethShadow = "none";
   const openTeethShadow = "none";
   const openAngle =
-    zipX <= 1 ? 0 : (Math.atan(openSlope / zipX) * 180) / Math.PI;
+    zipX <= 1 || containerSize.width <= 1
+      ? 0
+      : (Math.atan((openSlope * containerSize.height) / (zipX * containerSize.width)) *
+          180) /
+        Math.PI;
 
   const TeethRow = ({
     left,
