@@ -163,6 +163,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     variant,
     idSuffix,
     rotateDeg = 0,
+    zIndex = 20,
   }: {
     left?: string;
     right?: string;
@@ -172,6 +173,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     variant: "open" | "closed";
     idSuffix: string;
     rotateDeg?: number;
+    zIndex?: number;
   }) => {
     const patternId = `${patternBaseId}-teeth-${variant}-${idSuffix}`;
     const patternWidth =
@@ -185,8 +187,9 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
 
     return (
       <div
-        className="absolute z-20"
+        className="absolute"
         style={{
+          zIndex,
           left,
           right,
           top,
@@ -332,19 +335,21 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           left="0"
           width={`${zipX}%`}
           top={openTopY}
-          opacity={openProgress}
+          opacity={1}
           variant="open"
           idSuffix="open-top"
           rotateDeg={openAngle}
+          zIndex={30}
         />
         <TeethRow
           left="0"
           width={`${zipX}%`}
           top={openBottomY}
-          opacity={openProgress}
+          opacity={1}
           variant="open"
           idSuffix="open-bottom"
           rotateDeg={-openAngle}
+          zIndex={30}
         />
 
         {/* Zipper teeth (closed row) */}
@@ -354,6 +359,7 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
           top={closedY}
           variant="closed"
           idSuffix="closed"
+          zIndex={25}
         />
 
         {/* Zipper slider */}
