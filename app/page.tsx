@@ -2,6 +2,7 @@ import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { TargetAudience } from "@/components/target-audience";
 import { ScissorsDivider } from "@/components/scissors-divider";
+import { ZipperDivider } from "@/components/zipper-divider";
 import { WorkFormat } from "@/components/work-format";
 import { Specialization } from "@/components/specialization";
 import { Process } from "@/components/process";
@@ -22,8 +23,8 @@ export default function Home() {
       
       <TargetAudience />
       
-      {/* Scissors cut transition: cream to black */}
-      <ScissorsDivider fromTheme="cream" toTheme="black" />
+      {/* Zipper transition: cream to black */}
+      <ZipperDivider fromTheme="cream" toTheme="black" />
       
       <WorkFormat />
       <Specialization />
