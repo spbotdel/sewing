@@ -111,8 +111,6 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const toColors = themeColors[toTheme];
 
   const reverse = scrollDirection === "up";
-  const fabricColors = reverse ? toColors : fromColors;
-  const baseColors = reverse ? fromColors : toColors;
 
   const cutProgress = clamp(
     (scissorsProgress - SCISSORS_START_DELAY) / (1 - SCISSORS_START_DELAY),
@@ -143,7 +141,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const snip = (snipPhase + 1) / 2;
   const bladeAngle =
     BLADE_MIN_ANGLE + (BLADE_MAX_ANGLE - BLADE_MIN_ANGLE) * (1 - snip);
-  const textureColor = hexToRgba(fabricColors.fg, 0.18);
+  const textureColor = hexToRgba(fromColors.fg, 0.18);
   const fabricTexture = `repeating-linear-gradient(
     0deg,
     transparent,
@@ -164,13 +162,13 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     >
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: baseColors.bg }}
+        style={{ backgroundColor: toColors.bg }}
       >
         {/* Uncut fabric */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundColor: fabricColors.bg,
+            backgroundColor: fromColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
             clipPath: uncutClipPath,
@@ -190,7 +188,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fabricColors.bg,
+              backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-topRotate}deg)`,
@@ -212,7 +210,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fabricColors.bg,
+              backgroundColor: fromColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-bottomRotate}deg)`,
