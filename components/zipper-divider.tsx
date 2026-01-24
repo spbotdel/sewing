@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 interface ZipperDividerProps {
   fromTheme: "cream" | "black" | "red";
@@ -34,7 +34,9 @@ const ZIPPER_MAX_X = 96;
 const OPEN_START = 0.08;
 const OPEN_SLOPE_MAX = 18;
 const OPEN_GAP_MAX = 18;
-const TEETH_HEIGHT = 10;
+const TEETH_HEIGHT = 12;
+const TEETH_PATTERN_WIDTH_CLOSED = 18;
+const TEETH_PATTERN_WIDTH_OPEN = 14;
 
 export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
   const [zipperProgress, setZipperProgress] = useState(0);
@@ -121,18 +123,116 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
     ${textureColor} 4px
   )`;
 
-  const teethColor = hexToRgba(fromColors.fg, 0.78);
-  const teethShadow = hexToRgba(fromColors.fg, 0.35);
-  const tapeColor = hexToRgba(fromColors.fg, 0.18);
+  const teethColor = hexToRgba(fromColors.fg, 0.9);
+  const teethShadow = hexToRgba(fromColors.fg, 0.5);
+  const tapeColor = hexToRgba(fromColors.fg, 0.22);
+  const tapeEdge = hexToRgba(fromColors.fg, 0.42);
   const sliderBody = fromColors.fg;
   const sliderEdge = hexToRgba(fromColors.fg, 0.7);
   const sliderSlot = hexToRgba(fromColors.bg, 0.92);
   const sliderHighlight = hexToRgba(fromColors.bg, 0.5);
 
-  const teethPattern = `repeating-linear-gradient(90deg, ${teethColor} 0 7px, transparent 7px 12px)`;
+  const patternBaseId = useId().replace(/:/g, "");
   const openTopY = `calc(50% - ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const openBottomY = `calc(50% + ${openGap}px - ${TEETH_HEIGHT / 2}px)`;
   const closedY = `calc(50% - ${TEETH_HEIGHT / 2}px)`;
+  const closedTeethShadow = `0 2px 3px ${teethShadow}`;
+  const openTeethShadow = `0 1px 2px ${teethShadow}`;
+
+  const TeethRow = ({
+    left,
+    right,
+    top,
+    width,
+    opacity = 1,
+    variant,
+    idSuffix,
+  }: {
+    left?: string;
+    right?: string;
+    top: string;
+    width?: string;
+    opacity?: number;
+    variant: "open" | "closed";
+    idSuffix: string;
+  }) => {
+    const patternId = `${patternBaseId}-teeth-${variant}-${idSuffix}`;
+    const patternWidth =
+      variant === "closed" ? TEETH_PATTERN_WIDTH_CLOSED : TEETH_PATTERN_WIDTH_OPEN;
+
+    return (
+      <div
+        className="absolute z-20"
+        style={{
+          left,
+          right,
+          top,
+          width,
+          height: `${TEETH_HEIGHT}px`,
+          backgroundColor: tapeColor,
+          borderTop: `1px solid ${tapeEdge}`,
+          borderBottom: `1px solid ${tapeEdge}`,
+          boxShadow: variant === "closed" ? closedTeethShadow : openTeethShadow,
+          opacity,
+        }}
+      >
+        <svg width="100%" height="100%" aria-hidden="true" focusable="false">
+          <defs>
+            {variant === "closed" ? (
+              <pattern
+                id={patternId}
+                width={patternWidth}
+                height={TEETH_HEIGHT}
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M2 6
+                     C2 3.2 4.2 2 6.4 2
+                     C7.9 2 8.9 2.7 9.8 3.6
+                     C10.7 2.7 11.7 2 13.2 2
+                     C15.4 2 17.4 3.2 17.4 6
+                     C17.4 8.8 15.4 10 13.2 10
+                     C11.7 10 10.7 9.3 9.8 8.4
+                     C8.9 9.3 7.9 10 6.4 10
+                     C4.2 10 2 8.8 2 6 Z"
+                  fill={teethColor}
+                  stroke={teethShadow}
+                  strokeWidth="0.6"
+                />
+              </pattern>
+            ) : (
+              <pattern
+                id={patternId}
+                width={patternWidth}
+                height={TEETH_HEIGHT}
+                patternUnits="userSpaceOnUse"
+              >
+                <rect
+                  x="2"
+                  y="2"
+                  width="7"
+                  height="8"
+                  rx="3"
+                  fill={teethColor}
+                  stroke={teethShadow}
+                  strokeWidth="0.6"
+                />
+                <rect
+                  x="9"
+                  y="4"
+                  width="3"
+                  height="4"
+                  rx="1"
+                  fill={teethColor}
+                />
+              </pattern>
+            )}
+          </defs>
+          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+        </svg>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -196,45 +296,30 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
         </div>
 
         {/* Zipper teeth (open rows) */}
-        <div
-          className="absolute z-20"
-          style={{
-            left: 0,
-            width: `${zipX}%`,
-            top: openTopY,
-            height: `${TEETH_HEIGHT}px`,
-            backgroundColor: tapeColor,
-            backgroundImage: teethPattern,
-            boxShadow: `0 1px 2px ${teethShadow}`,
-            opacity: openProgress,
-          }}
+        <TeethRow
+          left="0"
+          width={`${zipX}%`}
+          top={openTopY}
+          opacity={openProgress}
+          variant="open"
+          idSuffix="open-top"
         />
-        <div
-          className="absolute z-20"
-          style={{
-            left: 0,
-            width: `${zipX}%`,
-            top: openBottomY,
-            height: `${TEETH_HEIGHT}px`,
-            backgroundColor: tapeColor,
-            backgroundImage: teethPattern,
-            boxShadow: `0 1px 2px ${teethShadow}`,
-            opacity: openProgress,
-          }}
+        <TeethRow
+          left="0"
+          width={`${zipX}%`}
+          top={openBottomY}
+          opacity={openProgress}
+          variant="open"
+          idSuffix="open-bottom"
         />
 
         {/* Zipper teeth (closed row) */}
-        <div
-          className="absolute z-20"
-          style={{
-            left: `${zipX}%`,
-            right: 0,
-            top: closedY,
-            height: `${TEETH_HEIGHT}px`,
-            backgroundColor: tapeColor,
-            backgroundImage: teethPattern,
-            boxShadow: `0 1px 2px ${teethShadow}`,
-          }}
+        <TeethRow
+          left={`${zipX}%`}
+          right="0"
+          top={closedY}
+          variant="closed"
+          idSuffix="closed"
         />
 
         {/* Zipper slider */}
@@ -256,41 +341,46 @@ export function ZipperDivider({ fromTheme, toTheme }: ZipperDividerProps) {
             }}
           >
             <path
-              d="M50 14
-                 Q56 14 56 20
-                 L56 42
-                 Q56 48 50 48
-                 L28 48
-                 L14 34
-                 Q12 32 14 30
-                 L28 14
+              d="M10 18
+                 H38
+                 Q46 18 46 26
+                 V38
+                 Q46 46 38 46
+                 H26
+                 L10 34
+                 Q8 32 10 30
                  Z"
               fill={sliderBody}
               stroke={sliderEdge}
               strokeWidth="2"
               strokeLinejoin="round"
             />
-            <path
-              d="M26 22 L16 32 L26 42 L34 42 L34 22 Z"
-              fill={sliderSlot}
+            <rect x="24" y="24" width="14" height="16" rx="3" fill={sliderSlot} />
+            <rect
+              x="40"
+              y="22"
+              width="10"
+              height="20"
+              rx="4"
+              fill={sliderBody}
+              stroke={sliderEdge}
+              strokeWidth="2"
             />
-            <rect x="32" y="20" width="18" height="16" rx="5" fill={sliderSlot} />
             <path
-              d="M30 18 L52 18"
+              d="M16 20 L36 20"
               stroke={sliderHighlight}
               strokeWidth="2"
               strokeLinecap="round"
             />
-            <rect x="36" y="44" width="8" height="8" rx="2" fill={sliderEdge} />
             <rect
-              x="30"
-              y="52"
-              width="20"
+              x="40"
+              y="44"
+              width="14"
               height="10"
               rx="5"
               fill="none"
               stroke={sliderEdge}
-              strokeWidth="3"
+              strokeWidth="2"
             />
           </svg>
         </div>
