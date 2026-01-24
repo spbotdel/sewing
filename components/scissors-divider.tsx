@@ -111,6 +111,8 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const toColors = themeColors[toTheme];
 
   const reverse = scrollDirection === "up";
+  const fabricColors = reverse ? toColors : fromColors;
+  const baseColors = reverse ? fromColors : toColors;
 
   const cutProgress = clamp(
     (scissorsProgress - SCISSORS_START_DELAY) / (1 - SCISSORS_START_DELAY),
@@ -128,14 +130,20 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
   const topRotate = -splitRotate;
   const bottomRotate = splitRotate;
   const cutOrigin = `${cutX}% ${CUT_PIVOT_Y}%`;
-  const topClipPath = `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`;
-  const bottomClipPath = `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
-  const uncutClipPath = `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`;
+  const topClipPath = reverse
+    ? `polygon(${cutX}% 0, 100% 0, 100% ${CUT_LINE_Y_LEFT}%, ${cutX}% ${CUT_PIVOT_Y}%)`
+    : `polygon(0 0, ${cutX}% 0, ${cutX}% ${CUT_PIVOT_Y}%, 0 ${CUT_LINE_Y_LEFT}%)`;
+  const bottomClipPath = reverse
+    ? `polygon(${cutX}% ${CUT_PIVOT_Y}%, 100% ${CUT_LINE_Y_RIGHT}%, 100% 100%, ${cutX}% 100%)`
+    : `polygon(0 ${CUT_LINE_Y_RIGHT}%, ${cutX}% ${CUT_PIVOT_Y}%, ${cutX}% 100%, 0 100%)`;
+  const uncutClipPath = reverse
+    ? `polygon(0 0, ${cutXOverlapMin}% 0, ${cutXOverlapMin}% 100%, 0 100%)`
+    : `polygon(${cutXOverlapMin}% 0, 100% 0, 100% 100%, ${cutXOverlapMin}% 100%)`;
   const snipPhase = Math.sin(scissorsProgress * Math.PI * SNIP_COUNT);
   const snip = (snipPhase + 1) / 2;
   const bladeAngle =
     BLADE_MIN_ANGLE + (BLADE_MAX_ANGLE - BLADE_MIN_ANGLE) * (1 - snip);
-  const textureColor = hexToRgba(fromColors.fg, 0.18);
+  const textureColor = hexToRgba(fabricColors.fg, 0.18);
   const fabricTexture = `repeating-linear-gradient(
     0deg,
     transparent,
@@ -156,13 +164,13 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     >
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: toColors.bg }}
+        style={{ backgroundColor: baseColors.bg }}
       >
-        {/* Uncut fabric on the right */}
+        {/* Uncut fabric */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundColor: fromColors.bg,
+            backgroundColor: fabricColors.bg,
             backgroundImage: fabricTexture,
             backgroundPosition: "0 0",
             clipPath: uncutClipPath,
@@ -182,7 +190,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fromColors.bg,
+              backgroundColor: fabricColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-topRotate}deg)`,
@@ -204,7 +212,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundColor: fromColors.bg,
+              backgroundColor: fabricColors.bg,
               backgroundImage: fabricTexture,
               backgroundPosition: "0 0",
               transform: `rotate(${-bottomRotate}deg)`,
