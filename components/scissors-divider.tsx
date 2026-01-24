@@ -143,9 +143,7 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
     ${textureColor} 2px,
     ${textureColor} 4px
   )`;
-  const scissorsPivot = reverse
-    ? 100 - SCISSORS_PIVOT_PERCENT
-    : SCISSORS_PIVOT_PERCENT;
+  const scissorsPivot = SCISSORS_PIVOT_PERCENT;
 
   // Scissors position based on progress
   const scissorsLeft = cutX;
@@ -220,109 +218,116 @@ export function ScissorsDivider({ fromTheme, toTheme }: ScissorsDividerProps) {
           className="absolute top-1/2 z-20"
           style={{
             left: `${scissorsLeft}%`,
-            transform: `translate(-${scissorsPivot}%, -50%) rotate(${reverse ? 180 : 0}deg)`,
+            transform: `translate(-${scissorsPivot}%, -50%)`,
           }}
         >
-          <svg
-            width="180"
-            height="180"
-            viewBox="0 0 100 100"
-            fill="none"
-            className="drop-shadow-2xl"
+          <div
             style={{
-              filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5))",
-              overflow: "visible",
+              transform: `rotate(${reverse ? 180 : 0}deg)`,
+              transformOrigin: `${scissorsPivot}% 50%`,
             }}
           >
-            <defs>
-              <linearGradient
-                id="scissorsBladeGradient"
-                x1="0"
-                y1="0"
-                x2="1"
-                y2="1"
+            <svg
+              width="180"
+              height="180"
+              viewBox="0 0 100 100"
+              fill="none"
+              className="drop-shadow-2xl"
+              style={{
+                filter: "drop-shadow(0 0 10px rgba(0,0,0,0.5))",
+                overflow: "visible",
+              }}
+            >
+              <defs>
+                <linearGradient
+                  id="scissorsBladeGradient"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor={BLADE_LIGHT} />
+                  <stop offset="55%" stopColor={BLADE_MID} />
+                  <stop offset="100%" stopColor={BLADE_DARK} />
+                </linearGradient>
+              </defs>
+
+              <g
+                style={{
+                  transform: `rotate(${-bladeAngle}deg)`,
+                  transformOrigin: "40px 50px",
+                  transition: "transform 0.18s ease-out",
+                }}
               >
-                <stop offset="0%" stopColor={BLADE_LIGHT} />
-                <stop offset="55%" stopColor={BLADE_MID} />
-                <stop offset="100%" stopColor={BLADE_DARK} />
-              </linearGradient>
-            </defs>
+                {/* Top blade */}
+                <path
+                  d="M26 32 L44 44 L96 40 L94 44 L46 52 L28 36 Z"
+                  fill="url(#scissorsBladeGradient)"
+                  stroke={BLADE_EDGE}
+                  strokeWidth="0.9"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                {/* Top handle ring */}
+                <circle
+                  cx="20"
+                  cy="22"
+                  r="10"
+                  fill="none"
+                  stroke={HANDLE_COLOR}
+                  strokeWidth="4"
+                />
+                <circle
+                  cx="20"
+                  cy="22"
+                  r="6.5"
+                  fill="none"
+                  stroke={HANDLE_HIGHLIGHT}
+                  strokeWidth="1.2"
+                  opacity="0.7"
+                />
+              </g>
 
-            <g
-              style={{
-                transform: `rotate(${-bladeAngle}deg)`,
-                transformOrigin: "40px 50px",
-                transition: "transform 0.18s ease-out",
-              }}
-            >
-              {/* Top blade */}
-              <path
-                d="M26 32 L44 44 L96 40 L94 44 L46 52 L28 36 Z"
-                fill="url(#scissorsBladeGradient)"
-                stroke={BLADE_EDGE}
-                strokeWidth="0.9"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-              {/* Top handle ring */}
-              <circle
-                cx="20"
-                cy="22"
-                r="10"
-                fill="none"
-                stroke={HANDLE_COLOR}
-                strokeWidth="4"
-              />
-              <circle
-                cx="20"
-                cy="22"
-                r="6.5"
-                fill="none"
-                stroke={HANDLE_HIGHLIGHT}
-                strokeWidth="1.2"
-                opacity="0.7"
-              />
-            </g>
-
-            <g
-              style={{
-                transform: `rotate(${bladeAngle}deg)`,
-                transformOrigin: "40px 50px",
-                transition: "transform 0.18s ease-out",
-              }}
-            >
-              {/* Bottom blade */}
-              <path
-                d="M26 68 L44 56 L96 60 L94 56 L46 48 L28 64 Z"
-                fill="url(#scissorsBladeGradient)"
-                stroke={BLADE_EDGE}
-                strokeWidth="0.9"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-              {/* Bottom handle ring */}
-              <circle
-                cx="20"
-                cy="78"
-                r="10"
-                fill="none"
-                stroke={HANDLE_COLOR}
-                strokeWidth="4"
-              />
-              <circle
-                cx="20"
-                cy="78"
-                r="6.5"
-                fill="none"
-                stroke={HANDLE_HIGHLIGHT}
-                strokeWidth="1.2"
-                opacity="0.7"
-              />
-            </g>
-            {/* Pivot screw */}
-            <circle cx="40" cy="50" r="6" fill={PIVOT_OUTER} />
-            <circle cx="40" cy="50" r="3" fill={PIVOT_INNER} />
-          </svg>
+              <g
+                style={{
+                  transform: `rotate(${bladeAngle}deg)`,
+                  transformOrigin: "40px 50px",
+                  transition: "transform 0.18s ease-out",
+                }}
+              >
+                {/* Bottom blade */}
+                <path
+                  d="M26 68 L44 56 L96 60 L94 56 L46 48 L28 64 Z"
+                  fill="url(#scissorsBladeGradient)"
+                  stroke={BLADE_EDGE}
+                  strokeWidth="0.9"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                {/* Bottom handle ring */}
+                <circle
+                  cx="20"
+                  cy="78"
+                  r="10"
+                  fill="none"
+                  stroke={HANDLE_COLOR}
+                  strokeWidth="4"
+                />
+                <circle
+                  cx="20"
+                  cy="78"
+                  r="6.5"
+                  fill="none"
+                  stroke={HANDLE_HIGHLIGHT}
+                  strokeWidth="1.2"
+                  opacity="0.7"
+                />
+              </g>
+              {/* Pivot screw */}
+              <circle cx="40" cy="50" r="6" fill={PIVOT_OUTER} />
+              <circle cx="40" cy="50" r="3" fill={PIVOT_INNER} />
+            </svg>
+          </div>
         </div>
 
       </div>
